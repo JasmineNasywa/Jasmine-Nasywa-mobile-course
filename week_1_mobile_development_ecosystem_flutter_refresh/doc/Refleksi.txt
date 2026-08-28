@@ -1,0 +1,14 @@
+Jawaban Refleksi
+1. Native lebih dibutuhkan ketika aplikasi membutuhkan performa tinggi atau akses ke fitur atau hardware perangkat, atau membutuhkan integrasi khusus ke sistem informasinya
+2. State menyimpan data atau kondisi yang dapat berubah di aplikasi. Jadi ketika state berubah flutter dapat membangun kembali bagian widget tree yang bergantung pada state tersebut
+3. Agar bisa ditinjau atau dilacak atau dipahami oleh anggota tim lain, jika terjadi kesalahan, perubahan tertentu juga lebih mudah ditemukan atau dibatalkan. untuk portofolio, dapat menunjukkan kesan penggunaan git dengan baik dan kemampuan mengelola perubahan kode secara terstruktur
+
+
+
+
+
+
+
+
+
+

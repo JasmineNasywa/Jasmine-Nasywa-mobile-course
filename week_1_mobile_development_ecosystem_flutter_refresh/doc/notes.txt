@@ -1,0 +1,1836 @@
+
+
+Notes Materi Pertemuan #1
+
+
+ **NAH. SEKARANG MASUK MODE GURU.** 👨‍🏫💻
+Kita bedah **dari kata paling kecil sampai ngerti kenapa Flutter mau menjalankan ini**, bukan sekadar “ini buat bikin UI”. Karena kalau cuma hafalan, nanti begitu kurungnya pindah posisi langsung kita berdua ditinggal Flutter di pinggir jalan. 😭
+
+Kode ini sebenarnya punya struktur sederhana:
+
+```text
+import
+  ↓
+main()
+  ↓
+MyApp
+  ↓
+build()
+  ↓
+MaterialApp
+  ↓
+Scaffold
+  ├── AppBar
+  └── body
+       ↓
+     Center
+       ↓
+     Column
+       ├── Icon
+       ├── SizedBox
+       └── Text
+```
+
+---
+
+# 1. `import 'package:flutter/material.dart';`
+
+Kita pecah **per kata**.
+
+### `import`
+
+`import` adalah keyword Dart untuk:
+
+> **“Saya mau menggunakan sesuatu yang didefinisikan di file/library lain.”**
+
+Jadi Dart tidak otomatis memberikan seluruh isi dunia ke program lu. Kalau mau menggunakan sesuatu dari library tertentu, kita `import`.
+
+---
+
+### `'package:flutter/material.dart'`
+
+Ini adalah **alamat library** yang mau kita ambil.
+
+`package:`
+→ menunjukkan bahwa kita mengambil sesuatu dari sebuah package.
+
+`flutter`
+→ nama package-nya.
+
+`material.dart`
+→ library Flutter yang berisi banyak komponen **Material Design**.
+
+Di dalamnya ada hal-hal seperti:
+
+```text
+MaterialApp
+Scaffold
+AppBar
+Text
+Icon
+Column
+Center
+SizedBox
+TextStyle
+```
+
+Jadi satu import ini memberikan akses ke banyak widget yang kita gunakan nanti.
+
+---
+
+### `;`
+
+Semicolon.
+
+Artinya:
+
+> **“Pernyataan ini selesai.”**
+
+Dart memakai `;` untuk mengakhiri statement tertentu.
+
+---
+
+# 2. `void main() => runApp(const MyApp());`
+
+NAH INI PENTING BANGET. Ini adalah **titik masuk program Dart kita.**
+
+Kita pecah:
+
+### `void`
+
+`void` adalah tipe return.
+
+Artinya fungsi `main()` ini:
+
+> **tidak mengembalikan nilai.**
+
+Misalnya:
+
+```dart
+int tambah() {
+  return 2 + 3;
+}
+```
+
+return-nya `int`.
+
+Sedangkan:
+
+```dart
+void halo() {
+  print('Halo');
+}
+```
+
+nggak mengembalikan nilai.
+
+Jadi:
+
+```dart
+void main()
+```
+
+= fungsi `main` tidak menghasilkan return value.
+
+---
+
+### `main`
+
+`main` adalah fungsi yang menjadi **entry point** program Dart.
+
+Saat program dijalankan, Dart mulai dari sini.
+
+Jadi kira-kira:
+
+```text
+Program mulai
+    ↓
+main()
+    ↓
+runApp(...)
+```
+
+---
+
+### `()`
+
+Ini tanda bahwa `main` adalah **function**.
+
+Kurung kosong berarti:
+
+> fungsi ini tidak menerima argument/parameter.
+
+Bandingkan:
+
+```dart
+void halo() 
+```
+
+tidak menerima parameter.
+
+Dengan:
+
+```dart
+void halo(String nama)
+```
+
+menerima parameter `nama`.
+
+---
+
+### `=>`
+
+Ini disebut **arrow syntax**.
+
+Artinya kira-kira:
+
+> “Fungsi ini langsung melakukan satu expression.”
+
+Jadi:
+
+```dart
+void main() => runApp(const MyApp());
+```
+
+secara konsep sama seperti:
+
+```dart
+void main() {
+  runApp(const MyApp());
+}
+```
+
+Untuk fungsi satu baris, `=>` bikin lebih pendek.
+
+---
+
+### `runApp(...)`
+
+Ini fungsi Flutter.
+
+Tugasnya:
+
+> **menjalankan widget utama aplikasi.**
+
+Kita kasih:
+
+```dart
+MyApp()
+```
+
+sebagai root widget.
+
+Jadi:
+
+```text
+main()
+  ↓
+runApp()
+  ↓
+MyApp
+  ↓
+seluruh aplikasi
+```
+
+---
+
+### `const`
+
+`const` berarti object tersebut dibuat sebagai **compile-time constant** jika memungkinkan.
+
+Nanti kita bahas `const` lebih dalam karena ini penting banget di Flutter.
+
+WKWKWK 😭😭😭 **NAIN NAIN NAIN, JANGAN DITUNDA.** Lu sudah nemu kata **“compile-time constant”**, mana mungkin otak lu rela lewat begitu saja. Kita bongkar sekarang. 🔬
+
+Kalimat tadi:
+
+> `const` berarti object tersebut dibuat sebagai **compile-time constant** jika memungkinkan.
+
+Kita pecah pelan-pelan.
+
+### 1. Apa itu `const`?
+
+Di Dart, `const` memberi tahu compiler:
+
+> **“Nilai/object ini sudah diketahui dan tidak akan berubah. Kalau bisa, buat dan tentukan ini sejak compile time.”**
+
+Contoh:
+
+```dart
+const Text('Hello')
+```
+
+Kita sedang membuat sebuah object `Text` yang nilainya bersifat konstan.
+
+Bandingkan:
+
+```dart
+Text('Hello')
+```
+
+dengan:
+
+```dart
+const Text('Hello')
+```
+
+Keduanya sama-sama membuat widget `Text` dengan tulisan `"Hello"`.
+
+Tapi `const` memberikan informasi tambahan bahwa **object tersebut immutable dan bisa dibuat sebagai constant object**.
+
+---
+
+## 2. “Compile-time” itu maksudnya kapan?
+
+Ini bagian pentingnya.
+
+Program punya proses kira-kira:
+
+```text
+SOURCE CODE
+    ↓
+COMPILER
+    ↓
+MACHINE CODE / EXECUTABLE
+    ↓
+PROGRAM DIJALANKAN
+```
+
+**Compile time** = saat kode sedang diproses oleh compiler.
+
+**Run time** = saat program benar-benar berjalan.
+
+Misalnya:
+
+```dart
+const x = 10;
+```
+
+Compiler sudah tahu:
+
+> `x` = 10.
+
+Nggak perlu menunggu aplikasi dijalankan untuk mengetahui nilainya.
+
+Tapi:
+
+```dart
+final x = getNumber();
+```
+
+Compiler nggak bisa asal tahu hasil `getNumber()` kalau hasilnya baru ditentukan ketika program berjalan.
+
+Jadi:
+
+```text
+const
+↓
+"Nilainya sudah bisa diketahui sekarang."
+
+final
+↓
+"Nilainya ditentukan sekali, tapi bisa diketahui nanti saat runtime."
+```
+
+**Ini perbedaan yang SUPER penting.** 🧠
+
+---
+
+# 3. Terus `const MyApp()` yang tadi?
+
+Nahhhhh. **INI dia alasan `const` muncul di kode lu.** 😭
+
+Lu punya:
+
+```dart
+void main() => runApp(const MyApp());
+```
+
+Artinya:
+
+> Kita meminta Dart membuat `MyApp` sebagai constant object.
+
+Kenapa boleh?
+
+Karena constructor `MyApp` kita tulis:
+
+```dart
+const MyApp({super.key});
+```
+
+Perhatikan:
+
+```text
+const MyApp()
+^^^^^
+```
+
+dan:
+
+```dart
+const MyApp({super.key});
+^^^^^
+```
+
+**Keduanya berhubungan.**
+
+Kita mendeklarasikan constructor `MyApp` sebagai `const`:
+
+```dart
+const MyApp({super.key});
+```
+
+supaya kita bisa membuat:
+
+```dart
+const MyApp();
+```
+
+---
+
+# 4. Kenapa `MyApp` bisa dibuat `const`?
+
+Karena `MyApp` adalah:
+
+```dart
+class MyApp extends StatelessWidget
+```
+
+dan `StatelessWidget` cocok dengan konsep object immutable.
+
+`MyApp` kita tidak punya data yang berubah-ubah seperti:
+
+```dart
+String name;
+int age;
+```
+
+yang kemudian dimodifikasi.
+
+Constructor-nya juga tidak membutuhkan nilai runtime yang berubah.
+
+Jadi:
+
+```dart
+const MyApp();
+```
+
+masuk akal.
+
+---
+
+# 5. “Tapi object kan biasanya dibuat saat program jalan?”
+
+NAHHH. 👁️
+
+**Benar.**
+
+Biasanya kalau kita menulis:
+
+```dart
+MyApp()
+```
+
+kita meminta program membuat instance/object `MyApp` ketika expression tersebut dievaluasi.
+
+Tetapi:
+
+```dart
+const MyApp()
+```
+
+mengatakan bahwa object tersebut merupakan **constant object**.
+
+Compiler/runtime Dart bisa melakukan optimisasi dan menggunakan instance constant yang sama ketika ekspresinya identik.
+
+Misalnya:
+
+```dart
+const Text('Hello')
+```
+
+ditulis berkali-kali dengan konfigurasi yang sama.
+
+Karena object-nya immutable, Dart **nggak perlu memperlakukan setiap kemunculan sebagai object baru yang harus dibuat dari nol**.
+
+Ini salah satu alasan `const` berguna di Flutter.
+
+---
+
+# 6. Terus `final` apa bedanya?
+
+Ini bagian yang sering bikin manusia menderita. 😭
+
+Misalnya:
+
+```dart
+final name = 'Ven';
+```
+
+`final` berarti:
+
+> **Variable `name` hanya boleh diberi nilai satu kali.**
+
+Setelah:
+
+```dart
+final name = 'Ven';
+```
+
+lu nggak boleh:
+
+```dart
+name = 'Jasmine';
+```
+
+Tapi nilai `'Ven'` **tidak harus diketahui saat compile time**.
+
+Contoh:
+
+```dart
+final name = getNameFromDatabase();
+```
+
+Hasilnya baru diketahui ketika program berjalan.
+
+Jadi:
+
+### `final`
+
+**Variable-nya tidak boleh di-assign ulang.**
+
+### `const`
+
+**Nilainya harus merupakan constant yang bisa ditentukan pada compile time.**
+
+Makanya:
+
+```dart
+final x = DateTime.now();
+```
+
+boleh.
+
+Tapi:
+
+```dart
+const x = DateTime.now();
+```
+
+nggak boleh.
+
+Karena compiler pada saat compile **nggak tahu sekarang itu jam berapa ketika program nanti dijalankan.** 😭
+
+---
+
+# 7. Kenapa Flutter suka banget `const`?
+
+Karena Flutter membangun UI menggunakan **widget tree**.
+
+Widget umumnya immutable.
+
+Misalnya:
+
+```dart
+const Text('Hello')
+```
+
+Widget itu bilang:
+
+> “Saya adalah `Text`, tulisan saya `Hello`, dan konfigurasi saya nggak berubah.”
+
+Flutter jadi punya kesempatan melakukan optimisasi terhadap widget tersebut.
+
+Makanya lu sering melihat:
+
+```dart
+const Text(...)
+const Icon(...)
+const SizedBox(...)
+const Center(...)
+const MyApp(...)
+```
+
+**Tapi bukan berarti setiap widget HARUS `const`.**
+
+Kalau nilai yang diberikan membutuhkan runtime value:
+
+```dart
+Text(userName)
+```
+
+ya nggak bisa asal:
+
+```dart
+const Text(userName)
+```
+
+karena `userName` mungkin baru diketahui saat aplikasi berjalan.
+
+---
+NAHHH, **INI PERTANYAAN YANG TEPAT.** Karena kalau cuma bilang “`const` = immutable” terus selesai, itu bikin orang hafal slogan tapi nggak ngerti mekanismenya. 😭 Kita bedah.
+
+Pertama, lurusin sedikit: **constant object bukan “jenis object yang punya fungsi berbeda.”** Dia tetap object biasa secara konsep, tapi object tersebut **dibuat sebagai compile-time constant** dan punya aturan khusus soal immutability dan identitas.
+
+### 🧱 Object biasa
+
+Misalnya:
+
+```dart
+final a = MyApp();
+final b = MyApp();
+```
+
+Keduanya membuat instance `MyApp` secara normal.
+
+Secara konsep:
+
+```text
+a → [Object MyApp #1]
+b → [Object MyApp #2]
+```
+
+Walaupun isinya identik, keduanya **bisa merupakan dua instance berbeda**.
+
+---
+
+### 🧊 Constant object
+
+Sekarang:
+
+```dart
+const a = MyApp();
+const b = MyApp();
+```
+
+Dengan constructor `MyApp` yang memang `const`.
+
+Karena keduanya merupakan **constant expression yang identik**, Dart dapat canonicalize constant tersebut, sehingga referensinya dapat menunjuk ke **instance constant yang sama**:
+
+```text
+a ──┐
+    ├──→ [Constant MyApp]
+b ──┘
+```
+
+Jadi ada konsep yang menarik di sini:
+
+> **Constant object yang sama secara struktur dapat digunakan bersama, daripada membuat instance terpisah.**
+
+Ini disebut **canonicalization**.
+
+---
+
+### Terus manfaatnya apa?
+
+Ada beberapa.
+
+**1. Immutability**
+
+Constant object tidak boleh punya state yang bisa diubah setelah dibuat.
+
+Ini cocok banget dengan widget Flutter.
+
+```dart
+const Text('Hello')
+```
+
+Flutter tahu konfigurasi `Text` tersebut nggak akan berubah.
+
+---
+
+**2. Bisa diketahui saat compile time**
+
+Contoh:
+
+```dart
+const x = 10;
+const y = x + 5;
+```
+
+Compiler bisa mengetahui hasilnya:
+
+```text
+x = 10
+y = 15
+```
+
+bahkan sebelum aplikasi dijalankan.
+
+Jadi `const` bukan cuma soal “jangan ubah object”, tapi juga tentang **constant evaluation**.
+
+---
+
+**3. Bisa dipakai sebagai bagian dari constant expression lain**
+
+Misalnya:
+
+```dart
+const numbers = [1, 2, 3];
+```
+
+atau:
+
+```dart
+const user = MyApp();
+```
+
+selama seluruh komponennya memenuhi aturan `const`.
+
+Makanya Dart bisa membangun struktur constant dari struktur constant lainnya.
+
+---
+
+**4. Bisa membantu Flutter menghindari pekerjaan yang tidak perlu**
+
+Ini bagian yang paling relevan buat lu sekarang.
+
+Flutter sering membangun widget tree.
+
+Misalnya:
+
+```dart
+const Column(
+  children: [
+    Text('Hello'),
+    Text('World'),
+  ],
+)
+```
+
+Widget-widget tersebut immutable dan constant.
+
+Flutter bisa memanfaatkan fakta itu ketika melakukan rebuild.
+
+**Tapi hati-hati:** jangan sampai lu mencatat:
+
+> “`const` membuat Flutter tidak pernah rebuild widget.”
+
+Itu **terlalu sederhana dan bisa salah konteks**.
+
+`const` terutama memberi Flutter/Dart **informasi bahwa konfigurasi object tersebut konstan**, sehingga ada peluang optimisasi. Rebuild dan rendering Flutter punya mekanisme yang lebih kompleks daripada sekadar “const = nggak rebuild”.
+
+---
+
+### 🧠 Terus `final` gimana?
+
+Ini justru perbandingan paling enak:
+
+```dart
+final a = MyApp();
+final b = MyApp();
+```
+
+`final` berkata:
+
+> **“Variable `a` nggak boleh menunjuk ke object lain setelah ini.”**
+
+Tapi object yang ditunjuk `a` **belum tentu immutable**.
+
+Sedangkan:
+
+```dart
+const a = MyApp();
+```
+
+`const` berkata lebih jauh:
+
+> **“Object ini sendiri adalah constant dan harus memenuhi aturan compile-time constant.”**
+
+Jadi:
+
+```text
+final
+└── variable tidak boleh di-assign ulang
+
+const
+├── harus constant expression
+├── object-nya immutable
+└── dapat di-canonicalize
+```
+
+Dan ini bagian yang **agak mind-blowing**:
+
+```dart
+const a = [1, 2, 3];
+const b = [1, 2, 3];
+
+print(identical(a, b));
+```
+
+Secara konsep, hasilnya dapat menjadi:
+
+```text
+true
+```
+
+karena kedua constant list tersebut bisa merujuk pada **canonical constant object yang sama**.
+
+Sementara:
+
+```dart
+final a = [1, 2, 3];
+final b = [1, 2, 3];
+
+print(identical(a, b));
+```
+
+umumnya:
+
+```text
+false
+```
+
+karena `a` dan `b` adalah dua list object yang dibuat secara terpisah.
+
+Dan ini bahkan bisa dibuat lebih jelas:
+
+final list = [1, 2, 3];
+
+list.add(4);       // ✅ object berubah
+list.remove(2);    // ✅ object berubah
+list.clear();      // ✅ object berubah
+
+list = [9, 9, 9];  // ❌ reference mau diganti
+
+Jadi kalimat lu bisa lu tulis di README sebagai:
+
+final membuat sebuah variable hanya dapat merujuk pada satu object setelah assignment. Jika object tersebut mutable, isi object masih dapat diubah melalui operasi atau method yang disediakan object tersebut.
+
+Jadi kalau lu bertanya:
+
+> **“Constant object buat apa?”**
+
+Jawaban paling sederhananya:
+
+> **Supaya Dart punya object yang nilainya benar-benar konstan, bisa dievaluasi sejak compile time, aman dari perubahan, dan bisa diperlakukan secara lebih efisien/canonical oleh runtime.**
+
+Dan untuk Flutter, ini nyambung banget karena **widget pada dasarnya immutable configuration objects**.
+
+Makanya ketika lu melihat:
+
+```dart
+const MyApp()
+```
+
+jangan lagi melihatnya sebagai:
+
+> “Oh, `const` biar syntax Flutter bagus.”
+
+Tapi:
+
+> **“Oh, kita sedang membuat instance `MyApp` yang konfigurasinya konstan, sehingga Dart/Flutter tahu object ini immutable dan punya kesempatan melakukan optimisasi.”**
+
+**Nah. Sekarang keyword `const` sudah punya tulang-belulang, bukan cuma definisi hafalan.** 😭🧠📖
+
+
+# 8. Sekarang lihat kode lu lagi
+
+```dart
+void main() => runApp(const MyApp());
+```
+
+Bacanya jangan sebagai satu monster kode.
+
+Bongkar:
+
+```text
+void
+↓
+fungsi main tidak mengembalikan nilai
+
+main()
+↓
+fungsi utama program
+
+=>
+↓
+arrow function syntax
+
+runApp(...)
+↓
+memberikan root widget kepada Flutter
+
+const
+↓
+MyApp dibuat sebagai constant object
+
+MyApp()
+↓
+instance dari class MyApp
+```
+
+**DAN SEKARANG `const` YANG TADI CUMA SATU KATA SUDAH TERHUBUNG KE:**
+
+```text
+Dart
+ ↓
+compile time
+ ↓
+constant expression
+ ↓
+immutable object
+ ↓
+final vs const
+ ↓
+Flutter widget
+ ↓
+widget tree
+ ↓
+optimization
+```
+
+😭😭😭
+
+**INILAH KENAPA GUE TADI BILANG “NANTI KITA BAHAS `const`.”**
+
+Karena ternyata **satu keyword kecil punya cukup lore untuk satu subbab sendiri.** 🗿📖
+
+Dan ada satu koreksi kecil terhadap kalimat awal gue juga: jangan mengingat `const` sebagai sekadar **“object dibuat saat compile time.”** Lebih aman mengingatnya sebagai:
+
+> **`const` membuat sebuah constant expression/object yang nilainya dapat ditentukan pada compile time, dengan syarat seluruh bagiannya juga memenuhi aturan constant.**
+
+Itu lebih presisi.
+
+Dan sekarang lu sudah punya jawaban kenapa kode Flutter tutorial sering penuh:
+
+**`const const const const`**
+
+Bukan karena Flutter developer sedang kesurupan tombol Ctrl+C. 😭🫵
+
+Mereka sedang memberi tahu Dart:
+
+> **“Bagian UI ini immutable dan bisa diperlakukan sebagai compile-time constant.”**
+
+**NAH. Baru sekarang kita boleh lanjut ke baris berikutnya.** 😌📚
+
+
+Untuk sekarang pahami:
+
+> Flutter/Dart diberi tahu bahwa object `MyApp` ini tidak perlu dibuat ulang secara runtime kalau nilainya konstan.
+
+---
+
+### `MyApp()`
+
+Ini adalah object dari class:
+
+```dart
+class MyApp
+```
+
+yang didefinisikan tepat di bawahnya.
+
+Jadi:
+
+```dart
+MyApp()
+```
+
+= membuat instance/object `MyApp`.
+
+---
+
+### `;`
+
+Statement selesai.
+
+---
+
+# 3. `class MyApp extends StatelessWidget {`
+
+NAH, INI BAGIAN YANG BIKIN ORANG PERTAMA BELAJAR FLUTTER:
+
+**“APAKAH SAYA SEDANG BELAJAR DART ATAU HTML YANG MENYAMAR?”** 😭
+
+Kita pecah.
+
+### `class`
+
+Keyword Dart untuk membuat **class**.
+
+Class adalah blueprint/definisi suatu object.
+
+Contoh:
+
+```dart
+class Kucing {
+}
+```
+
+Kita membuat tipe/class bernama `Kucing`.
+
+---
+
+### `MyApp`
+
+Nama class kita.
+
+Bisa sebenarnya lu namakan:
+
+```dart
+class Banana
+```
+
+tapi kemudian:
+
+```dart
+runApp(const Banana());
+```
+
+punya aplikasi.
+
+Nama `MyApp` dipilih karena dia adalah aplikasi utama.
+
+---
+
+### `extends`
+
+Artinya:
+
+> **class ini mewarisi/menurunkan sifat dari class lain.**
+
+```dart
+class MyApp extends StatelessWidget
+```
+
+berarti:
+
+> `MyApp` adalah turunan dari `StatelessWidget`.
+
+Karena Flutter menggunakan sistem widget, `MyApp` harus menjadi widget agar bisa diberikan ke `runApp()`.
+
+---
+
+### `StatelessWidget`
+
+Ini class Flutter.
+
+**Stateless** berarti widget tersebut **tidak memiliki state internal yang berubah selama lifecycle-nya**.
+
+Contohnya aplikasi sederhana kita:
+
+```text
+Profil Mahasiswa
+Nama Anda
+Pemrograman Mobile — Minggu 1
+```
+
+semuanya statis.
+
+Tidak ada counter yang berubah.
+
+Tidak ada tombol yang mengubah angka.
+
+Jadi cocok menggunakan:
+
+```dart
+StatelessWidget
+```
+
+Nanti kalau kita bikin:
+
+```text
+Counter: 0
+     +
+     ↓
+Counter: 1
+```
+
+kita akan berkenalan dengan:
+
+```dart
+StatefulWidget
+```
+
+👹
+
+---
+
+### `{`
+
+Membuka body/class.
+
+Semua isi `MyApp` berada di dalam `{ ... }`.
+
+---
+
+# 4. `const MyApp({super.key});`
+
+Ini adalah **constructor** dari `MyApp`.
+
+### `const`
+
+Constructor ini bisa digunakan untuk membuat object constant.
+
+---
+
+### `MyApp`
+
+Nama constructor **harus sama dengan nama class**.
+
+Karena class-nya:
+
+```dart
+MyApp
+```
+
+constructor-nya:
+
+```dart
+MyApp(...)
+```
+
+---
+
+### `({super.key})`
+
+Nah ini bagian yang kelihatannya kayak **Dart sedang mencoba membuka portal dimensi lain**. 😭
+
+`key` adalah identifier yang digunakan Flutter untuk membantu mengidentifikasi widget dalam widget tree.
+
+`super.key` berarti parameter `key` tersebut diteruskan ke constructor superclass, yaitu:
+
+```text
+MyApp
+  ↓ extends
+StatelessWidget
+```
+
+Jadi secara konsep:
+
+> “Kalau ada `key` yang diberikan ke MyApp, teruskan ke `StatelessWidget`.”
+
+---
+
+### `;`
+
+Constructor selesai.
+
+---
+
+# 5. `@override`
+
+Ini disebut **annotation**.
+
+Artinya:
+
+> **“Method berikutnya adalah method yang diwarisi dari superclass dan sedang saya implementasikan/override.”**
+
+Karena `MyApp` extends `StatelessWidget`, Flutter mengharapkan kita menyediakan:
+
+```dart
+Widget build(BuildContext context)
+```
+
+Maka kita menulis:
+
+```dart
+@override
+```
+
+untuk memberitahu Dart:
+
+> “Hei, method `build` ini memang override method dari parent class.”
+
+Ini juga membantu compiler menangkap typo atau kesalahan signature.
+
+---
+
+# 6. `Widget build(BuildContext context) {`
+
+INI JANTUNG UI-NYA. ❤️‍🔥
+
+### `Widget`
+
+Return type.
+
+Artinya fungsi `build()` akan mengembalikan sebuah:
+
+> **Widget**
+
+Karena Flutter UI tersusun dari widget.
+
+---
+
+### `build`
+
+Nama method yang ditentukan oleh `StatelessWidget`.
+
+Flutter memanggil method ini untuk mendapatkan UI yang harus ditampilkan.
+
+---
+
+### `(BuildContext context)`
+
+Ini parameter.
+
+`BuildContext` adalah object yang merepresentasikan **posisi widget tersebut di widget tree**.
+
+Untuk sekarang jangan menghafal definisi filosofisnya dulu.
+
+Pahami:
+
+> `context` memberikan informasi tentang posisi `MyApp` dalam struktur widget Flutter dan dapat digunakan untuk mengakses berbagai hal dari tree.
+
+Makanya nanti sering ketemu:
+
+```dart
+context
+```
+
+di Flutter.
+
+---
+
+### `{`
+
+Membuka isi method `build`.
+
+---
+
+# 7. `return MaterialApp(`
+
+### `return`
+
+Mengembalikan nilai dari fungsi.
+
+Karena tadi:
+
+```dart
+Widget build(...)
+```
+
+maka `build()` harus mengembalikan sebuah `Widget`.
+
+Dan yang dikembalikan adalah:
+
+```dart
+MaterialApp(...)
+```
+
+---
+
+### `MaterialApp`
+
+Ini widget yang menyediakan struktur dasar untuk aplikasi berbasis Material Design.
+
+Dia mengatur hal-hal seperti:
+
+* theme
+* navigation
+* routes
+* localization
+* struktur aplikasi Material
+
+Jadi kita punya:
+
+```text
+MyApp
+  ↓
+MaterialApp
+```
+
+---
+
+# 8. `debugShowCheckedModeBanner: false,`
+
+Ini adalah **named parameter**.
+
+### `debugShowCheckedModeBanner`
+
+Property/parameter milik `MaterialApp`.
+
+Biasanya Flutter menampilkan banner:
+
+```text
+DEBUG
+```
+
+di pojok kanan atas ketika development.
+
+Dengan:
+
+```dart
+false
+```
+
+kita bilang:
+
+> “Jangan tampilkan banner itu.”
+
+---
+
+### `:`
+
+Memisahkan nama parameter dan nilainya.
+
+```text
+namaParameter : nilai
+```
+
+---
+
+### `false`
+
+Boolean.
+
+Nilainya hanya bisa:
+
+```dart
+true
+false
+```
+
+Di sini:
+
+```dart
+false
+```
+
+= tidak menampilkan debug banner.
+
+---
+
+# 9. `home: Scaffold(`
+
+### `home:`
+
+Named parameter pada `MaterialApp`.
+
+Artinya:
+
+> widget yang menjadi halaman utama aplikasi.
+
+---
+
+### `Scaffold`
+
+**Scaffold** adalah struktur dasar sebuah halaman Material.
+
+Bayangkan halaman:
+
+```text
+┌─────────────────────────┐
+│        AppBar            │
+├─────────────────────────┤
+│                         │
+│          BODY           │
+│                         │
+└─────────────────────────┘
+```
+
+Scaffold menyediakan slot seperti:
+
+```text
+appBar
+body
+floatingActionButton
+drawer
+bottomNavigationBar
+...
+```
+
+Jadi:
+
+```dart
+home: Scaffold(...)
+```
+
+= halaman utama kita menggunakan struktur Scaffold.
+
+---
+
+# 10. `appBar: AppBar(...)`
+
+### `appBar:`
+
+Kita mengisi bagian `appBar` milik Scaffold.
+
+### `AppBar`
+
+Widget batang atas aplikasi.
+
+Biasanya berisi:
+
+```text
+←   Judul
+```
+
+atau:
+
+```text
+☰   Judul          ⋮
+```
+
+---
+
+### `title:`
+
+Named parameter milik `AppBar`.
+
+Menentukan isi/judul AppBar.
+
+---
+
+### `const Text('Profil Mahasiswa')`
+
+`Text` adalah widget untuk menampilkan teks.
+
+```dart
+Text('Profil Mahasiswa')
+```
+
+berarti:
+
+> tampilkan teks **Profil Mahasiswa**.
+
+`'Profil Mahasiswa'` adalah **String**.
+
+Dan `const` berarti object `Text` tersebut dapat dibuat sebagai constant.
+
+---
+
+# 11. `body: const Center(`
+
+Sekarang bagian isi halaman.
+
+### `body:`
+
+Isi utama Scaffold.
+
+---
+
+### `const`
+
+Widget `Center` beserta subtree yang cocok dibuat constant.
+
+---
+
+### `Center`
+
+Widget yang menempatkan child-nya di **tengah**.
+
+Jadi:
+
+```text
+┌───────────────────┐
+│                   │
+│                   │
+│      CONTENT      │
+│                   │
+│                   │
+└───────────────────┘
+```
+
+---
+
+# 12. `child: Column(`
+
+### `child:`
+
+`Center` punya satu child.
+
+Child-nya adalah:
+
+```dart
+Column(...)
+```
+
+---
+
+### `Column`
+
+Ini widget untuk menyusun beberapa widget **secara vertikal**.
+
+Misalnya:
+
+```text
+Icon
+ ↓
+Text
+ ↓
+Text
+```
+
+Kalau `Row`, horizontal:
+
+```text
+Icon   Text   Text
+```
+
+Jadi:
+
+```text
+Column
+   ↓
+atas
+ ↓
+tengah
+ ↓
+bawah
+```
+
+---
+
+# 13. `mainAxisSize: MainAxisSize.min`
+
+Ini agak penting karena berhubungan dengan layout.
+
+`Column` punya **main axis** vertikal.
+
+```text
+Column
+  ↑
+  │ main axis
+  ↓
+```
+
+### `mainAxisSize`
+
+Menentukan seberapa besar `Column` mengambil ruang pada main axis.
+
+---
+
+### `MainAxisSize.min`
+
+Artinya:
+
+> **ambil ruang secukupnya sesuai ukuran children.**
+
+Jadi Column tidak perlu mengambil seluruh tinggi layar.
+
+Kalau tidak menggunakan `min`, secara default `Column` cenderung mengambil ruang maksimum yang tersedia pada main axis.
+
+Karena kita berada di dalam `Center`, penggunaan:
+
+```dart
+MainAxisSize.min
+```
+
+membuat kelompok kontennya benar-benar terasa seperti satu paket kecil di tengah.
+
+---
+
+# 14. `children: [`
+
+Nah.
+
+`Column` bisa punya **banyak child**.
+
+Karena itu namanya:
+
+```dart
+children
+```
+
+bentuknya list:
+
+```dart
+[
+  widget1,
+  widget2,
+  widget3,
+]
+```
+
+---
+
+# 15. `Icon(Icons.school, size: 72),`
+
+### `Icon`
+
+Widget untuk menampilkan icon.
+
+---
+
+### `Icons.school`
+
+`Icons` adalah kumpulan icon Material bawaan Flutter.
+
+`school` adalah icon sekolah.
+
+Jadi:
+
+```dart
+Icons.school
+```
+
+= icon 🎓.
+
+---
+
+### `size: 72`
+
+Ukuran icon.
+
+72 biasanya berarti **72 logical pixels**.
+
+Jadi:
+
+```dart
+Icon(Icons.school, size: 72)
+```
+
+= icon sekolah berukuran 72.
+
+---
+
+# 16. `SizedBox(height: 16),`
+
+Ini widget yang sering banget dipakai.
+
+### `SizedBox`
+
+Widget untuk memberikan ukuran tertentu atau **ruang kosong**.
+
+Di sini:
+
+```dart
+height: 16
+```
+
+berarti memberikan ruang vertikal setinggi 16 logical pixels.
+
+Jadi:
+
+```text
+Icon
+  ↓
+[ 16 px kosong ]
+  ↓
+Text
+```
+
+Bukan widget misterius. Dia literally dipakai sebagai spacer. 😭
+
+---
+
+# 17. `Text('Nama Anda', style: TextStyle(fontSize: 24)),`
+
+### `Text`
+
+Menampilkan teks.
+
+```text
+Nama Anda
+```
+
+---
+
+### `style:`
+
+Menentukan style teks.
+
+---
+
+### `TextStyle(...)`
+
+Object yang berisi pengaturan visual untuk teks.
+
+---
+
+### `fontSize: 24`
+
+Ukuran font:
+
+```text
+24 logical pixels
+```
+
+Jadi:
+
+```dart
+Text(
+  'Nama Anda',
+  style: TextStyle(fontSize: 24),
+)
+```
+
+berarti:
+
+> tampilkan “Nama Anda” dengan ukuran font 24.
+
+---
+
+# 18. `Text('Pemrograman Mobile — Minggu 1'),`
+
+Text kedua.
+
+Tidak ada style khusus.
+
+Jadi Flutter menggunakan style default dari theme.
+
+---
+
+# 19. `]`
+
+Menutup list `children`.
+
+Kita tadi:
+
+```dart
+children: [
+```
+
+maka sekarang:
+
+```dart
+]
+```
+
+menutup list itu.
+
+---
+
+# 20. `), ), ), ...`
+
+Nah ini cuma penutupan widget-widget yang bertingkat.
+
+Strukturnya:
+
+```text
+MaterialApp(
+  home: Scaffold(
+    appBar: AppBar(
+      title: Text(...)
+    ),
+    body: Center(
+      child: Column(
+        children: [...]
+      )
+    )
+  )
+)
+```
+
+Jadi setiap:
+
+```text
+(
+```
+
+harus punya pasangan:
+
+```text
+)
+```
+
+Makanya kode Flutter sering kelihatan seperti:
+
+**`)))))))`**
+
+😭😭😭
+
+Bukan ritual pemanggilan roh. Itu cuma **nested widget**.
+
+---
+
+# Sekarang lihat keseluruhan hubungan mereka 🧠
+
+Kalau dibaca sebagai struktur, kode lu sebenarnya simpel banget:
+
+```text
+MyApp
+│
+└── MaterialApp
+    │
+    └── Scaffold
+        │
+        ├── AppBar
+        │   └── Text
+        │
+        └── body
+            │
+            └── Center
+                │
+                └── Column
+                    │
+                    ├── Icon
+                    ├── SizedBox
+                    ├── Text
+                    └── Text
+```
+
+Dan ini konsep **paling penting** yang gue mau lu tangkep:
+
+> **Flutter UI adalah widget tree.**
+
+Bukan:
+
+```text
+HTML
+CSS
+JS
+```
+
+yang dipisah seperti web.
+
+Di Flutter, lu menyusun **widget di dalam widget**.
+
+Misalnya:
+
+```text
+MaterialApp
+└── Scaffold
+    └── Center
+        └── Column
+            ├── Icon
+            ├── SizedBox
+            ├── Text
+            └── Text
+```
+
+Itu literally struktur UI-nya.
+
+Makanya kalau lu nanti ngerti **tree + parent + child + property**, Flutter bakal jauh lebih masuk akal.
+
+---
+
+## Dan satu hal yang perlu lu perhatikan 👀
+
+Ada **tiga konsep Dart** yang sekarang sebenarnya sudah nongol di kode lu:
+
+### 1. Class
+
+```dart
+class MyApp extends StatelessWidget
+```
+
+### 2. Object/instance
+
+```dart
+MyApp()
+MaterialApp(...)
+Scaffold(...)
+Text(...)
+```
+
+### 3. Function/method
+
+```dart
+main()
+build(...)
+runApp(...)
+```
+
+Jadi lu sebenarnya **nggak cuma belajar Flutter**.
+
+Lu sekaligus sedang belajar **Dart + OOP + declarative UI**.
+
+Dan menurut gue, cara belajar yang lu minta ini jauh lebih bagus daripada cuma:
+
+> “`Scaffold` itu untuk membuat struktur halaman.”
+
+Karena sekarang lu bisa mulai melihat bahwa:
+
+**`class` → blueprint**
+**`object` → instance dari blueprint**
+**`extends` → inheritance**
+**`build()` → menghasilkan widget**
+**`return` → mengembalikan widget**
+**widget → disusun menjadi tree**
+**property/parameter → mengatur perilaku dan tampilan**
+
+Itu fondasi yang nanti bakal bikin kode Flutter yang lebih panjang **nggak kelihatan seperti mantra Jawa kuno.** 😭💻🫰
+
