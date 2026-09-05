@@ -1,6 +1,31 @@
 # week_2_declarative_ui_and_responsive_design
 
-A new Flutter project.
+## Tujuan
+Menerapkan konsep declarative UI dan responsive design pada Flutter dengan membangun dashboard mahasiswa yang dapat menyesuaikan tata letak berdasarkan ukuran layar. Praktikum ini juga bertujuan memahami penggunaan StatelessWidget, StatefulWidget, LayoutBuilder, breakpoint, theme, serta komponen Material dan Cupertino.
+
+## Fitur Utama
+- Responsive dashboard
+- Light and dark theme
+- Dashboard Cards
+- Accessibility Support
+- Widget Testing
+
+Stack Teknologi
+- Flutter
+- Dart
+- Android
+
+Cara Menjalankan
+1. Pastikan Flutter sudah terpasang dan dapat digunakan.
+2. Buka folder project melalui terminal.
+3. Jalankan perintah:
+   flutter pub get
+   flutter run
+
+Hasil yang Dicapai
+Aplikasi berhasil dibuat dan dijalankan pada perangkat Android. Aplikasi menampilkan halaman 4 card yang responsive.
+
+
 
 ## Getting Started
 

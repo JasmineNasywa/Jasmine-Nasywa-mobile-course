@@ -1,0 +1,12 @@
+1. Apa perbedaan cara berpikir imperative dan declarative saat membangun UI?
+Imperative berfokus pada bagaimana UI harus diubah. Declarative berfokus pada seperti apa kondisi UI yang diinginkan berdasarkan state saat ini.
+
+2. Kapan Expanded membantu dan kapan penggunaannya justru menghasilkan layout error?
+membantu ketika sebuah widget berada di dalam Row atau Column dan ingin menggunakan ruang yang tersedia secara fleksibel, tapi Expanded dapat menghasilkan layout error ketika digunakan pada kondisi dengan constraint yang tidak terbatas
+
+3. Bagaimana breakpoint dan theme memengaruhi pengalaman pengguna?
+Breakpoint memungkinkan layout menyesuaikan diri dengan ukuran layar. theme memengaruhi tampilan visual seperti warna, brightness, dan UI
+
+4. Apa yang Anda verifikasi dari rekomendasi AI setelah tugas inti selesai?
+Setelah tugas inti selesai, rekomendasi AI tidak langsung diterapkan begitu saja. Saya memverifikasi apakah rekomendasi tersebut sesuai dengan requirement tugas, struktur kode Flutter, dan hasil yang diharapkan supaya tidak terjadi error yang tidak saya mengerti, apabila saya terapkan maka saya akan bertanya pada AI tentang detail kode tersebut.
+
