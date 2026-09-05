@@ -876,3 +876,1425 @@ Cara membaca Flutter yang paling enak: jangan baca sebagai kalimat dari kiri ke 
 Scaffold punya body → body punya Center → Center punya ProfileCard → ProfileCard punya Container → Container punya Column → Column punya Row, SizedBox, Row, Row.
 
 Begitu pola parent → child ini sudah masuk otak, kode Flutter yang tadinya kelihatan kayak kurungan matematika kesurupan bakal jauh lebih masuk akal. 😭✋
+
+
+
+
+##DasboardApp Praktikum 2##
+
+NAHH, yang ini levelnya naik sedikit dari Profile Card tadi 😭✊. Yang pertama fokus ke **susunan widget**, sedangkan yang ini mulai masuk ke **responsive layout, theme, dark mode, parameter wajib, dan membaca ukuran layar**.
+
+Aku bedah **per kata/baris**, terus di akhir aku kasih struktur pohonnya biar kelihatan hubungan semuanya.
+
+---
+
+# 1. Import
+
+```dart
+import 'package:flutter/material.dart';
+```
+
+Sama seperti sebelumnya.
+
+* `import` = mengambil library
+* `package:` = mengambil package
+* `flutter` = package Flutter
+* `material` = library Material Design
+* `.dart` = file Dart
+
+Ini yang menyediakan:
+
+```text
+MaterialApp
+StatelessWidget
+Scaffold
+AppBar
+LayoutBuilder
+GridView
+Card
+Padding
+Row
+Text
+ThemeData
+Colors
+Brightness
+ThemeMode
+...
+```
+
+Tanpa import ini, Flutter bakal menatapmu dengan error merah seperti manusia yang baru disuruh memahami pajak. 😭
+
+---
+
+# 2. `main()`
+
+```dart
+void main() => runApp(const DashboardApp());
+```
+
+### `void`
+
+Fungsi ini tidak mengembalikan nilai.
+
+### `main()`
+
+Titik awal program.
+
+### `=>`
+
+Versi singkat dari `{ return ... }` atau lebih tepatnya **expression-bodied function**.
+
+Ini:
+
+```dart
+void main() => runApp(const DashboardApp());
+```
+
+setara dengan:
+
+```dart
+void main() {
+  runApp(const DashboardApp());
+}
+```
+
+### `runApp()`
+
+Memberitahu Flutter:
+
+> "Widget ini adalah root aplikasi gue."
+
+### `const DashboardApp()`
+
+Membuat widget `DashboardApp`.
+
+---
+
+# 3. Class DashboardApp
+
+```dart
+class DashboardApp extends StatelessWidget {
+```
+
+### `class`
+
+Membuat blueprint/class.
+
+### `DashboardApp`
+
+Nama class.
+
+### `extends`
+
+Mewarisi kemampuan dari class lain.
+
+### `StatelessWidget`
+
+Widget yang tidak menyimpan state yang berubah.
+
+Jadi:
+
+```text
+DashboardApp
+     ↓
+StatelessWidget
+```
+
+---
+
+# 4. Constructor
+
+```dart
+const DashboardApp({super.key});
+```
+
+Ini constructor `DashboardApp`.
+
+### `const`
+
+Constructor dapat digunakan untuk membuat instance konstan.
+
+### `{}`
+
+Menunjukkan **named parameter**.
+
+### `super.key`
+
+Meneruskan `key` ke constructor parent (`StatelessWidget`).
+
+Pola ini bakal sering banget kamu lihat:
+
+```dart
+const MyWidget({super.key});
+```
+
+Anggap saja ini salah satu boilerplate Flutter.
+
+---
+
+# 5. `@override`
+
+```dart
+@override
+```
+
+Artinya:
+
+> "Gue mau menyediakan implementasi sendiri untuk method yang sudah dimiliki parent."
+
+Parent-nya `StatelessWidget`, dan kita mengisi method `build()`.
+
+---
+
+# 6. `Widget build(BuildContext context)`
+
+```dart
+Widget build(BuildContext context) {
+```
+
+### `Widget`
+
+Tipe nilai yang akan dikembalikan.
+
+### `build`
+
+Method untuk membangun tampilan widget.
+
+### `BuildContext`
+
+Informasi posisi widget dalam widget tree.
+
+### `context`
+
+Nama variable untuk `BuildContext`.
+
+Jadi secara kasar:
+
+```text
+build()
+ ↓
+Flutter meminta:
+"DashboardApp, UI kamu apa?"
+ ↓
+return MaterialApp(...)
+```
+
+---
+
+# 7. MaterialApp
+
+```dart
+return MaterialApp(
+```
+
+`return` = kembalikan hasil.
+
+Yang dikembalikan adalah:
+
+```text
+MaterialApp
+```
+
+Ini menjadi kerangka aplikasi.
+
+---
+
+# 8. Debug banner
+
+```dart
+debugShowCheckedModeBanner: false,
+```
+
+### `debugShowCheckedModeBanner`
+
+Mengatur tulisan `DEBUG` di pojok.
+
+### `false`
+
+Jangan tampilkan.
+
+---
+
+# 9. Theme
+
+Nah, mulai menarik. 👀
+
+```dart
+theme: ThemeData(
+  useMaterial3: true,
+  colorSchemeSeed: Colors.indigo,
+),
+```
+
+### `theme`
+
+Theme **terang/default** aplikasi.
+
+### `ThemeData`
+
+Object yang berisi konfigurasi visual aplikasi.
+
+Misalnya:
+
+* warna
+* typography
+* button style
+* card style
+* dan lain-lain.
+
+---
+
+## `useMaterial3`
+
+```dart
+useMaterial3: true,
+```
+
+Menggunakan sistem desain **Material 3**.
+
+### `true`
+
+Aktif.
+
+Jadi:
+
+```text
+useMaterial3
+      ↓
+    true
+      ↓
+Material 3 aktif
+```
+
+---
+
+## `colorSchemeSeed`
+
+```dart
+colorSchemeSeed: Colors.indigo,
+```
+
+Ini menentukan **warna dasar** yang digunakan Flutter untuk membuat color scheme.
+
+### `Colors.indigo`
+
+Warna indigo dijadikan seed.
+
+Flutter kemudian menghasilkan berbagai warna yang cocok dari seed tersebut.
+
+---
+
+# 10. Dark theme
+
+```dart
+darkTheme: ThemeData(
+  useMaterial3: true,
+  brightness: Brightness.dark,
+  colorSchemeSeed: Colors.indigo,
+),
+```
+
+Ini adalah **theme untuk mode gelap**.
+
+### `darkTheme`
+
+Theme yang digunakan ketika aplikasi berada pada dark mode.
+
+---
+
+### `brightness`
+
+```dart
+brightness: Brightness.dark,
+```
+
+Menentukan tingkat terang/gelap theme.
+
+### `Brightness.dark`
+
+Mode gelap.
+
+Jadi:
+
+```text
+brightness
+   ↓
+Brightness.dark
+   ↓
+dark theme
+```
+
+---
+
+# 11. ThemeMode.system
+
+```dart
+themeMode: ThemeMode.system,
+```
+
+Ini menentukan **theme mana yang digunakan**.
+
+`ThemeMode` punya beberapa pilihan.
+
+Yang kamu pakai:
+
+```dart
+ThemeMode.system
+```
+
+Artinya:
+
+> Ikuti pengaturan light/dark dari sistem perangkat.
+
+Misalnya:
+
+```text
+HP Windows dark mode
+        ↓
+Flutter → darkTheme
+
+HP Windows light mode
+        ↓
+Flutter → theme
+```
+
+Jadi aplikasi kamu otomatis ikut mode perangkat.
+
+Manusia akhirnya menyerahkan keputusan warna aplikasi kepada setting Windows. Efisiensi. 😭
+
+---
+
+# 12. `home`
+
+```dart
+home: const DashboardPage(),
+```
+
+Halaman pertama aplikasi adalah:
+
+```text
+DashboardPage
+```
+
+Jadi struktur sementara:
+
+```text
+DashboardApp
+└── MaterialApp
+    └── DashboardPage
+```
+
+---
+
+# 13. Class DashboardPage
+
+```dart
+class DashboardPage extends StatelessWidget {
+```
+
+Membuat widget halaman dashboard.
+
+Lagi-lagi:
+
+```text
+DashboardPage
+      ↓
+StatelessWidget
+```
+
+---
+
+# 14. Constructor
+
+```dart
+const DashboardPage({super.key});
+```
+
+Sama seperti sebelumnya.
+
+Constructor `DashboardPage`.
+
+---
+
+# 15. Build
+
+```dart
+@override
+Widget build(BuildContext context) {
+```
+
+Mendefinisikan UI halaman dashboard.
+
+---
+
+# 16. Scaffold
+
+```dart
+return Scaffold(
+```
+
+`Scaffold` = struktur dasar halaman.
+
+Kali ini ada dua bagian penting:
+
+```text
+Scaffold
+├── appBar
+└── body
+```
+
+---
+
+# 17. AppBar
+
+```dart
+appBar: AppBar(
+  title: const Text('Student Dashboard'),
+),
+```
+
+### `appBar`
+
+Bagian atas halaman.
+
+### `AppBar`
+
+Widget toolbar/header bawaan Material.
+
+### `title`
+
+Judul yang ditampilkan.
+
+### `Text`
+
+Menampilkan:
+
+```text
+Student Dashboard
+```
+
+Jadi:
+
+```text
+┌────────────────────────────────┐
+│ Student Dashboard              │ ← AppBar
+├────────────────────────────────┤
+│                                │
+│          dashboard             │
+│                                │
+└────────────────────────────────┘
+```
+
+---
+
+# 18. Body
+
+```dart
+body: LayoutBuilder(
+```
+
+Nah ini **bagian baru yang penting**.
+
+`LayoutBuilder` memungkinkan kita mengetahui **constraint/ruang yang diberikan parent kepada widget**.
+
+Sederhananya:
+
+> "Flutter, kasih tahu gue seberapa besar ruang yang tersedia."
+
+Ini sering dipakai untuk membuat **responsive UI**.
+
+---
+
+# 19. `builder`
+
+```dart
+builder: (context, constraints) {
+```
+
+`LayoutBuilder` punya callback bernama `builder`.
+
+Flutter akan memberikan dua parameter:
+
+```text
+context
+constraints
+```
+
+### `context`
+
+Informasi widget tree.
+
+### `constraints`
+
+Informasi mengenai batas ukuran yang tersedia.
+
+Di sini nanti kita menggunakan:
+
+```dart
+constraints.maxWidth
+```
+
+untuk mengetahui lebar maksimum yang tersedia.
+
+---
+
+# 20. `final columns`
+
+```dart
+final columns = constraints.maxWidth >= 700 ? 2 : 1;
+```
+
+INI BARIS YANG PALING "PROGRAMMING" DI KODE INI. 😭✊
+
+Kita pecah.
+
+---
+
+## `final`
+
+```dart
+final columns
+```
+
+`final` berarti variable tersebut **hanya bisa diisi sekali**.
+
+Misalnya:
+
+```dart
+final umur = 20;
+```
+
+Kamu tidak bisa kemudian:
+
+```dart
+umur = 21;
+```
+
+---
+
+## `columns`
+
+Nama variable.
+
+Isinya nanti jumlah kolom Grid.
+
+---
+
+## `constraints.maxWidth`
+
+`constraints` berasal dari:
+
+```dart
+builder: (context, constraints)
+```
+
+`maxWidth` = lebar maksimum yang tersedia.
+
+Misalnya layar:
+
+```text
+lebar = 800
+```
+
+maka:
+
+```dart
+constraints.maxWidth
+```
+
+bisa bernilai sekitar 800.
+
+---
+
+# 21. Operator `>=`
+
+```dart
+constraints.maxWidth >= 700
+```
+
+Artinya:
+
+> Apakah `maxWidth` lebih besar atau sama dengan 700?
+
+Contoh:
+
+```text
+800 >= 700 → true
+500 >= 700 → false
+700 >= 700 → true
+```
+
+---
+
+# 22. Ternary operator `? :`
+
+Ini:
+
+```dart
+condition ? nilaiJikaTrue : nilaiJikaFalse
+```
+
+Jadi:
+
+```dart
+constraints.maxWidth >= 700 ? 2 : 1
+```
+
+dibaca:
+
+> Kalau lebar >= 700, pakai 2 kolom. Kalau tidak, pakai 1 kolom.
+
+Setara dengan:
+
+```dart
+int columns;
+
+if (constraints.maxWidth >= 700) {
+  columns = 2;
+} else {
+  columns = 1;
+}
+```
+
+Jadi kode pendeknya:
+
+```text
+lebar >= 700?
+   │
+   ├── YES → 2 kolom
+   │
+   └── NO  → 1 kolom
+```
+
+**Inilah responsive layout-nya.**
+
+---
+
+# 23. `return GridView.count`
+
+```dart
+return GridView.count(
+```
+
+`GridView` digunakan untuk membuat layout berbentuk **grid**.
+
+Contoh:
+
+```text
+┌────────┐ ┌────────┐
+│ Card 1 │ │ Card 2 │
+├────────┤ ├────────┤
+│ Card 3 │ │ Card 4 │
+└────────┘ └────────┘
+```
+
+`count` berarti kita menentukan jumlah kolom menggunakan:
+
+```dart
+crossAxisCount
+```
+
+---
+
+# 24. Padding Grid
+
+```dart
+padding: const EdgeInsets.all(16),
+```
+
+Memberikan jarak 16 di semua sisi grid.
+
+---
+
+# 25. `crossAxisCount`
+
+```dart
+crossAxisCount: columns,
+```
+
+Menentukan **jumlah kolom**.
+
+Karena:
+
+```dart
+final columns = ... ? 2 : 1;
+```
+
+maka:
+
+```text
+lebar < 700
+→ columns = 1
+→ crossAxisCount = 1
+
+lebar >= 700
+→ columns = 2
+→ crossAxisCount = 2
+```
+
+Contohnya:
+
+### Layar kecil
+
+```text
+┌───────────────┐
+│ Assignments   │
+├───────────────┤
+│ Attendance    │
+├───────────────┤
+│ Portfolio     │
+├───────────────┤
+│ Current week  │
+└───────────────┘
+```
+
+### Layar lebar
+
+```text
+┌──────────────┬──────────────┐
+│ Assignments  │ Attendance   │
+├──────────────┼──────────────┤
+│ Portfolio    │ Current week │
+└──────────────┴──────────────┘
+```
+
+---
+
+# 26. `crossAxisSpacing`
+
+```dart
+crossAxisSpacing: 16,
+```
+
+Jarak **antar kolom**.
+
+```text
+[Card] ← 16 → [Card]
+```
+
+Karena Grid-nya horizontal pada cross axis.
+
+---
+
+# 27. `mainAxisSpacing`
+
+```dart
+mainAxisSpacing: 16,
+```
+
+Jarak **antar baris**.
+
+```text
+[Card]
+
+  16
+
+[Card]
+```
+
+Untuk `GridView`, main axis secara default adalah vertikal.
+
+---
+
+# 28. `childAspectRatio`
+
+```dart
+childAspectRatio: 2.6,
+```
+
+Menentukan perbandingan:
+
+```text
+lebar : tinggi
+```
+
+Jadi kira-kira:
+
+```text
+2.6 : 1
+```
+
+Artinya card dibuat lebih lebar daripada tinggi.
+
+Misalnya secara konsep:
+
+```text
+┌──────────────────────────────┐
+│                              │
+└──────────────────────────────┘
+       2.6      :      1
+```
+
+---
+
+# 29. `children`
+
+```dart
+children: const [
+```
+
+Grid akan memiliki beberapa child.
+
+Di sini ada **4 DashboardCard**.
+
+---
+
+# 30. DashboardCard pertama
+
+```dart
+DashboardCard(
+  title: 'Assignments',
+  value: '8',
+),
+```
+
+Kita membuat `DashboardCard`.
+
+Dia memiliki dua parameter:
+
+```text
+title = Assignments
+value = 8
+```
+
+Jadi tampilannya kira-kira:
+
+```text
+Assignments                 8
+```
+
+---
+
+# 31. Card kedua
+
+```dart
+DashboardCard(
+  title: 'Attendance',
+  value: '92%',
+),
+```
+
+Menghasilkan:
+
+```text
+Attendance                 92%
+```
+
+---
+
+# 32. Card ketiga
+
+```dart
+DashboardCard(
+  title: 'Portfolio',
+  value: 'Ready',
+),
+```
+
+Hasil:
+
+```text
+Portfolio                 Ready
+```
+
+---
+
+# 33. Card keempat
+
+```dart
+DashboardCard(
+  title: 'Current week',
+  value: '02',
+),
+```
+
+Hasil:
+
+```text
+Current week                02
+```
+
+---
+
+# 34. Sekarang class DashboardCard
+
+```dart
+class DashboardCard extends StatelessWidget {
+```
+
+Kita membuat custom widget lagi.
+
+```text
+DashboardCard
+      ↓
+StatelessWidget
+```
+
+---
+
+# 35. Constructor dengan parameter wajib
+
+```dart
+const DashboardCard({
+  required this.title,
+  required this.value,
+  super.key,
+});
+```
+
+Nah, **ini penting banget dibanding kode sebelumnya.**
+
+---
+
+## `required`
+
+Artinya parameter tersebut **WAJIB diberikan**.
+
+Jadi kita tidak boleh melakukan:
+
+```dart
+DashboardCard()
+```
+
+Karena `title` dan `value` wajib.
+
+Harus:
+
+```dart
+DashboardCard(
+  title: 'Assignments',
+  value: '8',
+)
+```
+
+---
+
+## `this.title`
+
+Artinya parameter constructor tersebut langsung mengisi property/class variable bernama `title`.
+
+Nanti kita punya:
+
+```dart
+final String title;
+```
+
+---
+
+## `this.value`
+
+Sama:
+
+```dart
+value → property value
+```
+
+---
+
+# 36. Variable `title`
+
+```dart
+final String title;
+```
+
+Ini adalah property milik `DashboardCard`.
+
+### `final`
+
+Nilainya tidak bisa diganti setelah object dibuat.
+
+### `String`
+
+Tipe datanya adalah teks.
+
+### `title`
+
+Nama variable.
+
+Jadi:
+
+```text
+title
+ ↓
+String
+ ↓
+"Assignments"
+```
+
+---
+
+# 37. Variable `value`
+
+```dart
+final String value;
+```
+
+Sama.
+
+Tipe:
+
+```text
+String
+```
+
+Contohnya:
+
+```text
+"8"
+"92%"
+"Ready"
+"02"
+```
+
+Menariknya, semuanya dibuat `String`, bahkan `"8"` dan `"02"`.
+
+Kalau angka yang benar-benar digunakan untuk operasi matematika, biasanya:
+
+```dart
+final int value;
+```
+
+Tapi di sini dia cuma **ditampilkan**, jadi String masuk akal.
+
+---
+
+# 38. Build DashboardCard
+
+```dart
+@override
+Widget build(BuildContext context) {
+```
+
+Membangun tampilan card.
+
+---
+
+# 39. `Card`
+
+```dart
+return Card(
+```
+
+`Card` adalah widget Material untuk membuat panel/kartu.
+
+---
+
+# 40. `Padding`
+
+```dart
+child: Padding(
+  padding: const EdgeInsets.all(20),
+```
+
+Padding memberi jarak antara isi dengan pinggir Card.
+
+Semua sisi:
+
+```text
+20 px
+```
+
+---
+
+# 41. Row
+
+```dart
+child: Row(
+  children: [
+```
+
+Isi Card disusun horizontal.
+
+```text
+[title]                         [value]
+```
+
+---
+
+# 42. Expanded
+
+```dart
+Expanded(
+  child: Text(title),
+),
+```
+
+Ini membuat `Text(title)` mengambil **ruang yang tersisa**.
+
+Jadi:
+
+```text
+Assignments                         8
+↑                                   ↑
+Expanded                            biasa
+```
+
+Kalau title panjang, Expanded membantu layout menggunakan ruang yang tersedia.
+
+---
+
+# 43. `Text(title)`
+
+```dart
+Text(title)
+```
+
+Ini sedikit berbeda dari:
+
+```dart
+Text('Assignments')
+```
+
+Karena sekarang yang ditampilkan berasal dari **variable**.
+
+Misalnya card dibuat:
+
+```dart
+DashboardCard(
+  title: 'Portfolio',
+  value: 'Ready',
+)
+```
+
+Maka:
+
+```dart
+Text(title)
+```
+
+menjadi:
+
+```text
+Text('Portfolio')
+```
+
+---
+
+# 44. Text value
+
+```dart
+Text(
+  value,
+  style: Theme.of(context).textTheme.headlineSmall,
+),
+```
+
+Menampilkan nilai.
+
+Misalnya:
+
+```text
+8
+92%
+Ready
+02
+```
+
+---
+
+# 45. `Theme.of(context)`
+
+Ini juga penting.
+
+```dart
+Theme.of(context)
+```
+
+Artinya:
+
+> Ambil theme yang sedang aktif dari widget tree.
+
+Karena sebelumnya kita punya:
+
+```dart
+theme: ThemeData(...)
+darkTheme: ThemeData(...)
+themeMode: ThemeMode.system
+```
+
+Flutter tahu theme aktifnya apa.
+
+---
+
+# 46. `.textTheme`
+
+```dart
+Theme.of(context).textTheme
+```
+
+Mengambil kumpulan style typography dari theme.
+
+Misalnya:
+
+```text
+displayLarge
+headlineLarge
+headlineSmall
+bodyLarge
+bodyMedium
+labelLarge
+...
+```
+
+---
+
+# 47. `.headlineSmall`
+
+```dart
+Theme.of(context).textTheme.headlineSmall
+```
+
+Mengambil style teks `headlineSmall`.
+
+Jadi value:
+
+```text
+8
+```
+
+tidak menggunakan TextStyle random buatan sendiri, tetapi menggunakan typography dari theme.
+
+---
+
+# 🧠 FULL FLOW-NYA
+
+Kalau seluruh kode dibaca sebagai alur:
+
+```text
+main()
+ │
+ ▼
+runApp()
+ │
+ ▼
+DashboardApp
+ │
+ ▼
+MaterialApp
+ │
+ ├── theme
+ │   └── Material 3 + indigo
+ │
+ ├── darkTheme
+ │   └── Material 3 + dark + indigo
+ │
+ ├── themeMode
+ │   └── system
+ │
+ └── home
+     │
+     ▼
+ DashboardPage
+     │
+     ▼
+ Scaffold
+     │
+     ├── AppBar
+     │   └── Student Dashboard
+     │
+     └── body
+         │
+         ▼
+     LayoutBuilder
+         │
+         ├── cek maxWidth
+         │
+         ├── >= 700 ?
+         │     ├── YES → 2 columns
+         │     └── NO  → 1 column
+         │
+         ▼
+     GridView.count
+         │
+         ├── DashboardCard
+         │    ├── Assignments
+         │    └── 8
+         │
+         ├── DashboardCard
+         │    ├── Attendance
+         │    └── 92%
+         │
+         ├── DashboardCard
+         │    ├── Portfolio
+         │    └── Ready
+         │
+         └── DashboardCard
+              ├── Current week
+              └── 02
+```
+
+Dan **3 konsep baru terbesar** dari kode ini sebenarnya cuma:
+
+### ① Responsive
+
+```dart
+final columns = constraints.maxWidth >= 700 ? 2 : 1;
+```
+
+> Layar kecil → 1 kolom
+> Layar besar → 2 kolom
+
+### ② Theme
+
+```dart
+theme: ThemeData(...)
+darkTheme: ThemeData(...)
+themeMode: ThemeMode.system
+```
+
+> Aplikasi punya light + dark theme dan mengikuti sistem.
+
+### ③ Custom widget dengan parameter
+
+```dart
+DashboardCard(
+  title: 'Assignments',
+  value: '8',
+)
+```
+
+yang masuk ke:
+
+```dart
+const DashboardCard({
+  required this.title,
+  required this.value,
+});
+```
+
+Lalu disimpan:
+
+```dart
+final String title;
+final String value;
+```
+
+Jadi data bisa **dikirim dari parent ke child**.
+
+---
+
+## Cheat sheet kode ini
+
+| Syntax                 | Arti                                |
+| ---------------------- | ----------------------------------- |
+| `theme:`               | theme terang                        |
+| `darkTheme:`           | theme gelap                         |
+| `ThemeData()`          | konfigurasi theme                   |
+| `ThemeMode.system`     | ikuti theme perangkat               |
+| `LayoutBuilder`        | membaca constraint layout           |
+| `constraints.maxWidth` | lebar maksimum yang tersedia        |
+| `>=`                   | lebih besar atau sama dengan        |
+| `? :`                  | if/else singkat                     |
+| `final`                | variable hanya diisi sekali         |
+| `GridView.count`       | grid dengan jumlah kolom tertentu   |
+| `crossAxisCount`       | jumlah kolom                        |
+| `crossAxisSpacing`     | jarak antar kolom                   |
+| `mainAxisSpacing`      | jarak antar baris                   |
+| `childAspectRatio`     | rasio lebar : tinggi child          |
+| `required`             | parameter wajib                     |
+| `this.title`           | isi property `title` dari parameter |
+| `Theme.of(context)`    | mengambil theme aktif               |
+| `textTheme`            | kumpulan style typography           |
+| `headlineSmall`        | salah satu style teks dari theme    |
+
+Kalau dibandingkan dengan kode **ProfileCard** sebelumnya, kode ini sebenarnya sedang ngajarin beberapa "loncatan" penting: **dari sekadar menyusun widget → mulai membuat widget reusable → menerima data → responsive terhadap ukuran layar → menggunakan global theme**. Itu sudah mulai masuk pola Flutter yang beneran kepakai di project, bukan sekadar kotak-kotak latihan yang hidup damai di tutorial. 😭✊
