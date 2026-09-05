@@ -2298,3 +2298,187 @@ Jadi data bisa **dikirim dari parent ke child**.
 | `headlineSmall`        | salah satu style teks dari theme    |
 
 Kalau dibandingkan dengan kode **ProfileCard** sebelumnya, kode ini sebenarnya sedang ngajarin beberapa "loncatan" penting: **dari sekadar menyusun widget → mulai membuat widget reusable → menerima data → responsive terhadap ukuran layar → menggunakan global theme**. Itu sudah mulai masuk pola Flutter yang beneran kepakai di project, bukan sekadar kotak-kotak latihan yang hidup damai di tutorial. 😭✊
+
+WKWKWK sabar, manusia memang bisa mengirim kode sebelum kalimatnya selesai 😭✋
+
+Nah, sekarang jelas. **Dua kode itu sama-sama membuat `MaterialApp`, tapi mekanisme pengaturan dark mode-nya berbeda total.**
+
+### 1. Versi `StatelessWidget`
+
+```dart
+void main() => runApp(const DashboardApp());
+
+class DashboardApp extends StatelessWidget {
+  const DashboardApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      ...
+      themeMode: ThemeMode.system,
+      home: const DashboardPage(),
+    );
+  }
+}
+```
+
+Di sini:
+
+```dart
+themeMode: ThemeMode.system,
+```
+
+artinya **Flutter mengikuti pengaturan tema sistem/HP**.
+
+Kalau HP sedang dark mode → aplikasi dark.
+Kalau HP sedang light mode → aplikasi light.
+
+`DashboardApp` **nggak perlu menyimpan variabel `isDark`**, karena dia tidak perlu mengingat pilihan tema dari pengguna.
+
+Alurnya:
+
+```text
+System/HP
+   ↓
+ThemeMode.system
+   ↓
+MaterialApp
+   ↓
+Light / Dark
+```
+
+---
+
+### 2. Versi `StatefulWidget`
+
+```dart
+class DashboardApp extends StatefulWidget {
+  const DashboardApp({super.key});
+
+  @override
+  State<DashboardApp> createState() => _DashboardAppState();
+}
+```
+
+Nah ini berarti `DashboardApp` **punya state**.
+
+State-nya:
+
+```dart
+bool isDark = false;
+```
+
+Jadi aplikasi sendiri yang menyimpan:
+
+> `isDark == false` → light
+> `isDark == true` → dark
+
+Kemudian:
+
+```dart
+themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+```
+
+Ini adalah **ternary operator**:
+
+```text
+isDark == true
+      ↓
+ThemeMode.dark
+
+isDark == false
+      ↓
+ThemeMode.light
+```
+
+Jadi dia **tidak mengikuti setting HP**. Aplikasi menentukan sendiri berdasarkan `isDark`.
+
+---
+
+### Yang paling penting justru bagian ini
+
+```dart
+home: DashboardPage(
+  isDark: isDark,
+  onDarkChanged: (value) => setState(() => isDark = value),
+),
+```
+
+Kamu mengirim dua hal dari `DashboardApp` ke `DashboardPage`.
+
+#### `isDark`
+
+```dart
+isDark: isDark,
+```
+
+Ini ngasih tahu `DashboardPage`:
+
+> “Sekarang aplikasi lagi dark atau nggak?”
+
+#### `onDarkChanged`
+
+```dart
+onDarkChanged: (value) => setState(() => isDark = value),
+```
+
+Ini memberikan **callback** ke `DashboardPage`.
+
+Misalnya di `DashboardPage` user menekan switch:
+
+```text
+User pencet switch
+        ↓
+DashboardPage
+        ↓
+onDarkChanged(true)
+        ↓
+setState(...)
+        ↓
+isDark = true
+        ↓
+DashboardApp rebuild
+        ↓
+themeMode = ThemeMode.dark
+        ↓
+seluruh MaterialApp jadi dark
+```
+
+Jadi `setState()` di sini penting karena dia memberi tahu Flutter:
+
+> **“State berubah, bangun ulang UI yang bergantung pada state ini.”**
+
+---
+
+## Jadi bedanya secara singkat
+
+|                                   | Stateless          | Stateful             |
+| --------------------------------- | ------------------ | -------------------- |
+| Menyimpan `isDark`                | ❌                  | ✅                    |
+| Bisa mengubah tema dari dalam app | ❌                  | ✅                    |
+| Mengikuti tema HP                 | ✅                  | ❌                    |
+| `themeMode`                       | `ThemeMode.system` | Berdasarkan `isDark` |
+| Perlu `setState()`                | ❌                  | ✅                    |
+| Perlu callback ke `DashboardPage` | ❌                  | ✅                    |
+
+### Analogi gampangnya
+
+**Stateless:**
+
+> “Pakainya sesuai keputusan HP.”
+
+```dart
+themeMode: ThemeMode.system
+```
+
+**Stateful:**
+
+> “HP terserah mau apa, aplikasi punya tombol sendiri.”
+
+```dart
+themeMode: isDark ? ThemeMode.dark : ThemeMode.light
+```
+
+Dan ini alasan kenapa versi kedua **butuh `StatefulWidget`**. Bukan karena `MaterialApp` secara ajaib membutuhkan StatefulWidget, tapi karena **kamu menyimpan pilihan tema (`isDark`) dan mengubahnya ketika user berinteraksi**.
+
+Kalau `isDark` nggak pernah berubah, bikin `DashboardApp` jadi `StatefulWidget` itu ya cuma membawa koper kosong naik tangga. 😭
