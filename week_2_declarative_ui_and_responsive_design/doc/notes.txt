@@ -1,0 +1,878 @@
+##warm-up layout sederhana##
+
+1. Import Flutter
+import 'package:flutter/material.dart';
+import
+
+Artinya: ambil / masukkan sesuatu dari library lain supaya bisa dipakai di file ini.
+
+Ibaratnya:
+
+“Flutter, pinjem alat-alat UI lu dong.”
+
+'package:flutter/material.dart'
+
+Ini adalah lokasi library Flutter yang mau kita gunakan.
+
+package: → menunjukkan kita mengambil package
+flutter → package Flutter
+material → kumpulan komponen Material Design
+dart → file/library Dart
+
+material.dart menyediakan banyak hal seperti:
+
+MaterialApp
+Scaffold
+Container
+Text
+Row
+Column
+Icon
+Colors
+CircleAvatar
+
+Jadi tanpa import ini, nama-nama tersebut tidak akan dikenali.
+
+2. Fungsi main()
+void main() => runApp(const ProfileApp());
+
+Ini bagian titik awal aplikasi.
+
+void
+
+Menunjukkan bahwa fungsi main() tidak mengembalikan nilai.
+
+Contoh:
+
+void makan() {
+}
+
+Fungsinya melakukan sesuatu, tapi tidak mengembalikan hasil.
+
+main()
+
+main adalah fungsi utama Dart.
+
+Program mulai dieksekusi dari sini.
+
+Jadi:
+
+main()
+ ↓
+runApp()
+ ↓
+ProfileApp
+ ↓
+UI
+=>
+
+Ini disebut arrow syntax.
+
+void main() => runApp(...);
+
+Kurang lebih sama dengan:
+
+void main() {
+  runApp(...);
+}
+
+Karena cuma ada satu expression, Dart memperbolehkan bentuk pendek.
+
+runApp(...)
+
+Fungsi Flutter untuk menjalankan widget sebagai root aplikasi.
+
+runApp(const ProfileApp());
+
+Artinya:
+
+“Flutter, jalankan ProfileApp sebagai aplikasi utama.”
+
+const ProfileApp()
+
+Membuat object/widget ProfileApp.
+
+const berarti object tersebut dibuat sebagai konstanta, selama isinya bisa ditentukan secara konstan.
+
+Nggak perlu terlalu dipusingkan dulu. Yang penting untuk sekarang:
+
+const = widget/object yang nilainya tidak perlu dibuat ulang karena sifatnya konstan.
+
+3. Class aplikasi
+class ProfileApp extends StatelessWidget {
+
+Nah ini penting.
+
+class
+
+class digunakan untuk membuat blueprint/template sebuah object.
+
+Misalnya:
+
+class Mobil {
+}
+
+Kita membuat blueprint bernama Mobil.
+
+Di sini:
+
+class ProfileApp
+
+kita membuat blueprint widget bernama ProfileApp.
+
+ProfileApp
+
+Nama class kita.
+
+Namanya bebas sebenarnya:
+
+class ProfileApp
+class MyApp
+class AplikasiSaya
+
+Tapi biasanya pakai nama yang menjelaskan fungsinya.
+
+extends
+
+Artinya:
+
+ProfileApp mewarisi kemampuan dari class lain.
+
+ProfileApp extends StatelessWidget
+
+Jadi ProfileApp adalah turunan dari StatelessWidget.
+
+StatelessWidget
+
+Widget yang tidak memiliki state yang berubah-ubah sendiri.
+
+Misalnya tampilan:
+
+Nama: Venn
+NIM: 12345
+Kelas: TI-4
+
+Kalau datanya tidak berubah selama widget berjalan, StatelessWidget cocok.
+
+Nanti ada juga:
+
+StatefulWidget
+
+untuk widget yang punya state yang bisa berubah.
+
+4. Constructor
+const ProfileApp({super.key});
+
+Ini adalah constructor dari ProfileApp.
+
+Constructor dipanggil ketika kita melakukan:
+
+ProfileApp()
+const
+
+Sama seperti tadi, constructor-nya bisa dibuat secara konstan.
+
+{ ... }
+
+Kurung kurawal di sini menunjukkan named parameter.
+
+super.key
+
+Ini sedikit lebih teknis.
+
+key adalah identitas yang bisa digunakan Flutter untuk mengenali widget tertentu dalam widget tree.
+
+super berarti parameter tersebut diteruskan ke constructor parent class, yaitu:
+
+StatelessWidget
+
+Jadi:
+
+{super.key}
+
+kurang lebih konsepnya:
+
+“Kalau ada key, teruskan ke StatelessWidget.”
+
+Untuk tugas dasar Flutter, kamu biasanya cukup hafal pola:
+
+const NamaWidget({super.key});
+
+Ini boilerplate yang sering banget muncul.
+
+5. Method build
+@override
+Widget build(BuildContext context) {
+
+Ini salah satu bagian PALING penting di Flutter.
+
+@override
+
+Artinya:
+
+“Saya sedang membuat ulang method yang sudah dimiliki parent class.”
+
+StatelessWidget punya method build(), lalu kita override.
+
+Widget
+
+Ini adalah tipe return.
+
+Artinya method build() harus mengembalikan sebuah Widget.
+
+Contohnya:
+
+Widget build(...) {
+  return Text("Halo");
+}
+build
+
+Nama method yang digunakan Flutter untuk membangun UI widget.
+
+(BuildContext context)
+
+Parameter yang diberikan Flutter kepada build().
+
+BuildContext
+
+Menyimpan informasi mengenai posisi widget tersebut di widget tree.
+
+Misalnya nanti digunakan untuk:
+
+Theme.of(context)
+Navigator.of(context)
+MediaQuery.of(context)
+
+Untuk kode kamu sekarang, context belum digunakan secara langsung.
+
+context
+
+Nama variable untuk objek BuildContext.
+
+Namanya sebenarnya bisa diganti:
+
+BuildContext ayam
+
+tapi jangan. 😭
+
+Gunakan convention:
+
+BuildContext context
+6. return
+return const MaterialApp(
+
+return berarti:
+
+“Kembalikan hasil ini dari function.”
+
+Karena build() harus menghasilkan Widget, kita mengembalikan:
+
+MaterialApp
+7. MaterialApp
+MaterialApp(
+
+Ini adalah widget yang menjadi kerangka utama aplikasi Material Design.
+
+Dia menangani banyak hal seperti:
+
+theme
+navigation
+routing
+konfigurasi aplikasi
+title
+localization
+dan sebagainya
+
+Secara sederhana:
+
+MaterialApp
+└── seluruh aplikasi
+8. debugShowCheckedModeBanner
+debugShowCheckedModeBanner: false,
+
+Ini adalah property milik MaterialApp.
+
+debugShowCheckedModeBanner
+
+Mengatur apakah tulisan:
+
+DEBUG
+
+muncul di pojok kanan atas saat aplikasi dijalankan dalam debug mode.
+
+:
+
+Memisahkan:
+
+nama property : nilainya
+false
+
+Artinya:
+
+Jangan tampilkan banner DEBUG.
+
+Kalau:
+
+debugShowCheckedModeBanner: true,
+
+banner-nya muncul.
+
+9. home
+home: Scaffold(
+
+home menentukan halaman utama pertama yang ditampilkan aplikasi.
+
+Jadi:
+
+MaterialApp
+└── home
+    └── Scaffold
+10. Scaffold
+Scaffold(
+
+Scaffold adalah struktur dasar sebuah halaman Flutter.
+
+Biasanya bisa punya:
+
+Scaffold(
+  appBar: ...,
+  body: ...,
+  drawer: ...,
+  floatingActionButton: ...,
+  bottomNavigationBar: ...,
+)
+
+Di kode kamu cuma pakai:
+
+body:
+
+Jadi halaman sederhananya:
+
+Scaffold
+└── body
+11. body
+body: Center(
+
+body adalah isi utama halaman.
+
+12. Center
+Center(
+  child: ProfileCard(),
+)
+
+Center digunakan untuk menaruh widget di tengah.
+
+Jadi:
+
+┌─────────────────────┐
+│                     │
+│     ProfileCard     │
+│                     │
+└─────────────────────┘
+child
+
+child berarti widget anak.
+
+Center(
+  child: ProfileCard(),
+)
+
+Artinya:
+
+Center punya satu child, yaitu ProfileCard.
+
+13. ProfileCard
+ProfileCard()
+
+Ini widget yang kita buat sendiri di bawah.
+
+Jadi kita sedang memasukkan custom widget ke dalam Center.
+
+14. Class ProfileCard
+class ProfileCard extends StatelessWidget {
+
+Sama seperti ProfileApp.
+
+Kita membuat custom widget bernama:
+
+ProfileCard
+
+dan dia merupakan:
+
+StatelessWidget
+
+Strukturnya sekarang:
+
+MaterialApp
+└── Scaffold
+    └── Center
+        └── ProfileCard
+15. Constructor ProfileCard
+const ProfileCard({super.key});
+
+Sama seperti ProfileApp.
+
+Constructor untuk widget ProfileCard.
+
+16. Build ProfileCard
+@override
+Widget build(BuildContext context) {
+
+Lagi-lagi:
+
+“Flutter, beginilah tampilan ProfileCard ini.”
+
+17. Container
+return Container(
+
+Container adalah widget yang biasa digunakan untuk mengatur ukuran, padding, margin, decoration, dan child.
+
+Ibarat kotak:
+
+┌─────────────────────────┐
+│       Container         │
+│                         │
+│       isi widget        │
+│                         │
+└─────────────────────────┘
+18. width
+width: 320,
+
+Lebar Container:
+
+320 logical pixels
+19. padding
+padding: const EdgeInsets.all(16),
+
+Padding = jarak antara tepi Container dengan isi di dalamnya.
+
+Container
+┌────────────────────────────┐
+│ ← 16                       │
+│    Isi                     │
+│                            │
+└────────────────────────────┘
+EdgeInsets
+
+Class untuk menentukan jarak.
+
+.all(16)
+
+Semua sisi diberi padding 16:
+
+top    = 16
+right  = 16
+bottom = 16
+left   = 16
+
+Kalau:
+
+EdgeInsets.only(left: 10)
+
+berarti cuma kiri.
+
+20. decoration
+decoration: BoxDecoration(
+
+Digunakan untuk menghias Container.
+
+Misalnya:
+
+warna
+border
+border radius
+shadow
+gradient
+21. BoxDecoration
+BoxDecoration(
+
+Karena Container kita berbentuk kotak, kita menggunakan BoxDecoration.
+
+22. color
+color: Colors.indigo.shade50,
+
+Warna background.
+
+Colors
+
+Kumpulan warna bawaan Flutter.
+
+indigo
+
+Warna indigo.
+
+.shade50
+
+Versi yang sangat muda/pucat dari indigo.
+
+Jadi:
+
+Colors.indigo.shade50
+
+= background indigo muda.
+
+23. borderRadius
+borderRadius: BorderRadius.circular(16),
+
+Mengatur sudut kotak.
+
+Tanpa ini:
+
+┌──────────────┐
+│              │
+└──────────────┘
+
+Dengan radius:
+
+╭──────────────╮
+│              │
+╰──────────────╯
+BorderRadius.circular(16)
+
+Membuat sudut membulat dengan radius 16.
+
+24. child
+child: Column(
+
+Isi utama Container adalah Column.
+
+25. Column
+Column(
+
+Column menyusun widget secara vertikal.
+
+Widget A
+   ↓
+Widget B
+   ↓
+Widget C
+
+Dalam kode kamu:
+
+Row avatar + nama
+        ↓
+NIM
+        ↓
+Kelas
+26. mainAxisSize
+mainAxisSize: MainAxisSize.min,
+
+Ini menentukan seberapa besar Column mengambil ruang pada main axis.
+
+Untuk Column, main axis = vertikal.
+
+MainAxisSize.min
+
+Artinya:
+
+Column mengambil tinggi secukupnya sesuai isi.
+
+Kalau max, dia cenderung mengambil ruang vertikal sebanyak yang tersedia.
+
+Jadi:
+
+min
+↓
+cukup untuk isi
+
+max
+↓
+sebesar ruang yang tersedia
+27. children
+children: [
+
+Kalau child hanya menerima satu widget, children menerima banyak widget.
+
+Misalnya:
+
+Column(
+  children: [
+    Text("A"),
+    Text("B"),
+    Text("C"),
+  ],
+)
+
+Hasil:
+
+A
+B
+C
+28. Row pertama
+Row(
+  children: [
+
+Row menyusun widget secara horizontal.
+
+Avatar    Nama
+
+Jadi struktur mulai menjadi:
+
+Column
+│
+├── Row
+│   ├── CircleAvatar
+│   ├── SizedBox
+│   └── Expanded
+│
+├── SizedBox
+│
+├── Row
+│
+└── Row
+
+Nah, ini sebenarnya inti struktur UI-nya. Flutter pada dasarnya cuma menyusun widget di dalam widget di dalam widget, sampai manusia menyerah dan mulai menggambar diagram pohon. 🌳
+
+29. CircleAvatar
+const CircleAvatar(
+  child: Icon(Icons.person),
+),
+
+Widget untuk membuat avatar berbentuk lingkaran.
+
+Icon
+Icon(Icons.person)
+
+Menampilkan icon.
+
+Icons.person
+
+Icon bawaan Flutter berupa simbol orang.
+
+30. SizedBox
+const SizedBox(width: 12),
+
+SizedBox digunakan untuk memberikan ukuran tertentu atau ruang kosong.
+
+Di sini:
+
+width: 12
+
+Artinya kasih jarak horizontal 12 pixel.
+
+Jadi:
+
+[Avatar]    [Nama]
+           ↑
+        12 px
+31. Expanded
+Expanded(
+  child: Column(
+
+Ini penting.
+
+Expanded membuat child mengambil ruang yang tersisa di dalam Row.
+
+Misalnya:
+
+[Avatar] [      Nama + data      ]
+
+Avatar punya ukuran sendiri.
+
+SizedBox punya lebar 12.
+
+Sisanya diberikan ke Expanded.
+
+32. Column nama
+Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
+
+Karena ini Column, dia menyusun:
+
+Nama Mahasiswa
+...ketik nama...
+
+vertikal.
+
+crossAxisAlignment
+
+Menentukan alignment pada cross axis.
+
+Untuk Column:
+
+main axis  = vertical
+cross axis = horizontal
+CrossAxisAlignment.start
+
+Artinya isi dimulai dari sisi kiri.
+
+Nama Mahasiswa
+...ketik nama...
+
+bukan misalnya:
+
+       Nama Mahasiswa
+       ...ketik nama...
+33. Text
+Text(
+  'Nama Mahasiswa',
+  style: TextStyle(
+    fontWeight: FontWeight.bold,
+  ),
+),
+
+Text menampilkan teks.
+
+'Nama Mahasiswa'
+
+String atau teks yang ditampilkan.
+
+style
+
+Mengatur penampilan teks.
+
+TextStyle
+
+Objek yang berisi pengaturan style teks.
+
+fontWeight
+
+Mengatur ketebalan font.
+
+FontWeight.bold
+
+Membuat teks menjadi bold.
+
+34. Text kedua
+Text('...ketik nama Anda di sini...'),
+
+Menampilkan teks biasa.
+
+35. SizedBox kedua
+const SizedBox(height: 12),
+
+Kali ini:
+
+height: 12
+
+Jadi memberi jarak vertikal 12.
+
+Nama
+Data
+
+   ↑ 12 px
+
+NIM
+36. Row NIM
+Row(
+  children: [
+    Expanded(
+      child: Text('NIM'),
+    ),
+    Text('...ketik NIM Anda di sini...'),
+  ],
+)
+
+Ini membuat:
+
+NIM              ...ketik NIM Anda di sini...
+
+Kenapa Expanded dipakai pada NIM?
+
+Karena dia akan mengambil sisa ruang horizontal.
+
+Misalnya:
+
+[NIM................] [...ketik NIM...]
+
+Jadi teks NIM terdorong ke kiri dan nilai NIM tetap berada di kanan.
+
+37. Row Kelas
+Row(
+  children: [
+    Expanded(
+      child: Text('Kelas'),
+    ),
+    Text('...ketik kelas Anda di sini...'),
+  ],
+)
+
+Logikanya sama:
+
+Kelas            ...ketik kelas Anda di sini...
+🧠 Kalau disederhanakan banget
+
+Seluruh kode ini sebenarnya punya struktur seperti ini:
+
+ProfileApp
+│
+└── MaterialApp
+    │
+    └── Scaffold
+        │
+        └── Center
+            │
+            └── ProfileCard
+                │
+                └── Container
+                    │
+                    └── Column
+                        │
+                        ├── Row
+                        │   ├── CircleAvatar
+                        │   │   └── Icon
+                        │   │
+                        │   ├── SizedBox
+                        │   │
+                        │   └── Expanded
+                        │       └── Column
+                        │           ├── Text
+                        │           └── Text
+                        │
+                        ├── SizedBox
+                        │
+                        ├── Row
+                        │   ├── Expanded
+                        │   │   └── Text "NIM"
+                        │   └── Text "..."
+                        │
+                        └── Row
+                            ├── Expanded
+                            │   └── Text "Kelas"
+                            └── Text "..."
+
+Dan secara visual:
+
+             ┌───────────────────────────────┐
+             │                               │
+             │  👤   Nama Mahasiswa           │
+             │       ...ketik nama...         │
+             │                               │
+             │  NIM       ...ketik NIM...    │
+             │  Kelas     ...ketik kelas...  │
+             │                               │
+             └───────────────────────────────┘
+Jadi hafalan konsep utamanya:
+Kode	Fungsi
+import	mengambil library
+main()	titik mulai program
+runApp()	menjalankan aplikasi
+class	membuat blueprint
+extends	mewarisi class
+StatelessWidget	widget tanpa state yang berubah
+build()	membangun UI
+return	mengembalikan widget
+MaterialApp	kerangka aplikasi
+Scaffold	kerangka halaman
+Center	menengahkan child
+Container	kotak/wadah
+padding	jarak dalam
+decoration	hiasan container
+BoxDecoration	style kotak
+Column	susun vertikal
+Row	susun horizontal
+children	banyak widget
+child	satu widget
+Expanded	mengambil ruang tersisa
+SizedBox	ukuran/jarak
+Text	menampilkan teks
+Icon	menampilkan icon
+CircleAvatar	avatar lingkaran
+const	nilai/widget konstan
+@override	mengganti implementasi method parent
+
+Cara membaca Flutter yang paling enak: jangan baca sebagai kalimat dari kiri ke kanan. Baca sebagai pohon widget.
+
+Scaffold punya body → body punya Center → Center punya ProfileCard → ProfileCard punya Container → Container punya Column → Column punya Row, SizedBox, Row, Row.
+
+Begitu pola parent → child ini sudah masuk otak, kode Flutter yang tadinya kelihatan kayak kurungan matematika kesurupan bakal jauh lebih masuk akal. 😭✋
