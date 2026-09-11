@@ -1,0 +1,1149 @@
+
+
+Intinya kode ini membuat **navigasi antar halaman menggunakan URL/path**, dibantu package `go_router`.
+
+---
+
+# 0. `flutter pub add go_router`
+
+```bash
+flutter pub add go_router
+```
+
+Kita bedah:
+
+* `flutter` → perintah untuk menjalankan tools Flutter.
+* `pub` → pengelola package/dependency Dart.
+* `add` → menambahkan dependency baru ke project.
+* `go_router` → nama package yang mau ditambahkan.
+
+Jadi artinya:
+
+> **"Flutter, tolong tambahkan package bernama `go_router` ke project ini."**
+
+Nanti otomatis masuk ke `pubspec.yaml`.
+
+---
+
+# 1. Struktur folder
+
+```text
+lib/
+├── main.dart
+└── pages/
+    ├── home_page.dart
+    └── detail_page.dart
+```
+
+### `lib/`
+
+Folder utama tempat kode Dart aplikasi Flutter biasanya berada.
+
+### `main.dart`
+
+File utama aplikasi.
+
+Biasanya di sinilah:
+
+```dart
+void main()
+```
+
+berada.
+
+### `pages/`
+
+Folder untuk menyimpan file-file halaman.
+
+Ini **bukan aturan wajib Flutter**, cuma cara merapikan project.
+
+### `home_page.dart`
+
+File untuk halaman Home.
+
+### `detail_page.dart`
+
+File untuk halaman Detail.
+
+Jadi:
+
+```text
+main.dart
+   ↓
+mengatur aplikasi + router
+
+home_page.dart
+   ↓
+halaman utama
+
+detail_page.dart
+   ↓
+halaman detail
+```
+
+---
+
+# 2. Import di `main.dart`
+
+```dart
+import 'package:flutter/material.dart';
+```
+
+### `import`
+
+Memasukkan sesuatu dari file/package lain supaya bisa digunakan.
+
+### `package:flutter/material.dart`
+
+Library Flutter yang berisi banyak komponen Material Design, misalnya:
+
+```dart
+MaterialApp
+Scaffold
+AppBar
+Text
+ThemeData
+Colors
+```
+
+---
+
+```dart
+import 'package:go_router/go_router.dart';
+```
+
+Memasukkan package `go_router`.
+
+Setelah ini kita bisa memakai:
+
+```dart
+GoRouter
+GoRoute
+```
+
+dan fitur navigasinya.
+
+---
+
+```dart
+import 'pages/detail_page.dart';
+import 'pages/home_page.dart';
+```
+
+Mengambil class dari file kita sendiri.
+
+Jadi nanti `main.dart` bisa mengenali:
+
+```dart
+HomePage()
+DetailPage()
+```
+
+---
+
+# 3. `main()`
+
+```dart
+void main() => runApp(const MyApp());
+```
+
+### `void`
+
+Artinya fungsi ini **tidak mengembalikan nilai**.
+
+### `main()`
+
+Fungsi pertama yang dijalankan ketika program Dart dimulai.
+
+### `=>`
+
+Bentuk singkat dari fungsi yang cuma punya satu ekspresi.
+
+Ini:
+
+```dart
+void main() => runApp(const MyApp());
+```
+
+kurang lebih sama dengan:
+
+```dart
+void main() {
+  runApp(const MyApp());
+}
+```
+
+### `runApp()`
+
+Perintah untuk menjalankan widget utama Flutter.
+
+### `MyApp`
+
+Widget utama aplikasi kita.
+
+### `const`
+
+Memberi tahu Flutter bahwa object tersebut bisa dibuat sebagai constant.
+
+---
+
+# 4. Ini bagian paling penting: `_router`
+
+```dart
+final _router = GoRouter(
+```
+
+### `final`
+
+Variabel yang nilainya **tidak bisa diganti setelah diinisialisasi**.
+
+Misalnya:
+
+```dart
+final nama = 'Ven';
+```
+
+Tidak bisa kemudian:
+
+```dart
+nama = 'Aru';
+```
+
+---
+
+### `_router`
+
+Ini **nama variabel**.
+
+Underscore `_` di awal nama Dart berarti identifier tersebut bersifat **private terhadap library/file tersebut**.
+
+Namanya sebenarnya bisa saja:
+
+```dart
+final router = ...
+```
+
+Tapi programmer memberi nama `_router` karena router ini hanya dipakai di file tersebut.
+
+---
+
+### `GoRouter`
+
+Class dari package `go_router`.
+
+Tugasnya:
+
+> **mengatur ke mana aplikasi harus berpindah ketika user melakukan navigasi.**
+
+Jadi anggap saja `GoRouter` sebagai **petugas lalu lintas halaman**.
+
+---
+
+# 5. `initialLocation`
+
+```dart
+initialLocation: '/',
+```
+
+### `initialLocation`
+
+Menentukan **alamat/path awal** aplikasi.
+
+```text
+/
+```
+
+biasanya dianggap sebagai halaman utama.
+
+Jadi ketika aplikasi dibuka:
+
+```text
+/
+↓
+HomePage
+```
+
+---
+
+# 6. `routes`
+
+```dart
+routes: [
+```
+
+### `routes`
+
+Daftar semua route yang tersedia.
+
+`[` berarti kita membuat **List**.
+
+Misalnya:
+
+```text
+/
+ /detail/1
+ /detail/2
+ /detail/3
+ ...
+```
+
+---
+
+# 7. `GoRoute`
+
+```dart
+GoRoute(
+```
+
+`GoRoute` adalah **satu aturan navigasi**.
+
+Gampangnya:
+
+> "Kalau URL/path-nya begini, tampilkan halaman ini."
+
+---
+
+## Route pertama
+
+```dart
+GoRoute(
+  path: '/',
+  builder: (context, state) => const HomePage(),
+```
+
+### `path`
+
+```dart
+path: '/',
+```
+
+Menentukan path yang harus cocok.
+
+Kalau aplikasi berada di:
+
+```text
+/
+```
+
+maka router akan menggunakan route ini.
+
+---
+
+### `builder`
+
+```dart
+builder: (context, state) => const HomePage(),
+```
+
+`builder` adalah fungsi yang menentukan:
+
+> **"Widget apa yang harus dibuat ketika route ini dibuka?"**
+
+Di sini jawabannya:
+
+```dart
+HomePage()
+```
+
+Jadi:
+
+```text
+path: '/'
+      ↓
+HomePage()
+```
+
+---
+
+### `(context, state)`
+
+Dua parameter yang diberikan `GoRouter` kepada builder.
+
+#### `context`
+
+`BuildContext`.
+
+Memberi informasi tentang posisi widget tersebut di dalam widget tree dan memungkinkan kita mengakses berbagai fitur Flutter.
+
+#### `state`
+
+`GoRouterState`.
+
+Berisi informasi mengenai route yang sedang dibuka.
+
+Nanti `state` ini sangat berguna buat mengambil parameter URL.
+
+---
+
+# 8. `routes` di dalam `routes`
+
+Nah ini bagian yang biasanya bikin orang:
+
+**"HAH KOK ROUTES ADA ROUTES LAGI 😭"**
+
+```dart
+routes: [
+  GoRoute(
+    path: '/',
+    builder: ...,
+    routes: [
+      GoRoute(
+        path: 'detail/:id',
+```
+
+Route di dalam route adalah **child/nested route**.
+
+Route utama:
+
+```text
+/
+```
+
+Child route:
+
+```text
+/detail/:id
+```
+
+Digabung menjadi:
+
+```text
+/detail/1
+/detail/2
+/detail/3
+```
+
+dan seterusnya.
+
+---
+
+# 9. `detail/:id`
+
+```dart
+path: 'detail/:id',
+```
+
+Ini keren sedikit.
+
+### `detail`
+
+Bagian path biasa.
+
+### `:id`
+
+Ini disebut **path parameter**.
+
+Artinya `id` bisa berubah.
+
+Jadi satu route ini bisa menangani:
+
+```text
+/detail/1
+/detail/2
+/detail/3
+/detail/10
+/detail/999
+```
+
+Daripada kita harus menulis:
+
+```dart
+GoRoute(path: 'detail/1')
+GoRoute(path: 'detail/2')
+GoRoute(path: 'detail/3')
+```
+
+yang jelas merupakan cara manusia menemukan penderitaan baru.
+
+Dengan:
+
+```text
+detail/:id
+```
+
+kita cukup punya **satu route dinamis**.
+
+---
+
+# 10. `state.pathParameters`
+
+```dart
+state.pathParameters['id']!
+```
+
+Ini mengambil nilai `id` dari URL.
+
+Misalnya user membuka:
+
+```text
+/detail/7
+```
+
+Maka:
+
+```dart
+state.pathParameters['id']
+```
+
+isinya:
+
+```text
+"7"
+```
+
+Karena parameter path berupa String.
+
+---
+
+### Kenapa `['id']`?
+
+Karena parameter kita tadi namanya:
+
+```text
+:id
+```
+
+Jadi kita mengambil parameter dengan key:
+
+```dart
+['id']
+```
+
+---
+
+### Terus `!` apaan?!
+
+```dart
+state.pathParameters['id']!
+```
+
+`!` disebut **null assertion operator**.
+
+Artinya programmer mengatakan kepada Dart:
+
+> "Saya yakin nilai ini tidak null."
+
+Tanpa `!`:
+
+```dart
+state.pathParameters['id']
+```
+
+tipe nilainya dianggap mungkin `null`.
+
+Dengan:
+
+```dart
+state.pathParameters['id']!
+```
+
+kita bilang:
+
+> "Anggap ini pasti ada."
+
+Karena route kita memang mensyaratkan:
+
+```text
+:id
+```
+
+---
+
+# 11. `DetailPage`
+
+```dart
+DetailPage(
+  id: state.pathParameters['id']!,
+),
+```
+
+Kita membuat halaman Detail sambil **mengirimkan id**.
+
+Misalnya URL:
+
+```text
+/detail/5
+```
+
+maka kira-kira:
+
+```dart
+DetailPage(id: '5')
+```
+
+Jadi alurnya:
+
+```text
+/detail/5
+    ↓
+ambil "5"
+    ↓
+state.pathParameters['id']
+    ↓
+DetailPage(id: '5')
+```
+
+---
+
+# 12. `MaterialApp.router`
+
+Ini perubahan penting dari Flutter biasa.
+
+Biasanya:
+
+```dart
+MaterialApp(
+```
+
+Sekarang:
+
+```dart
+MaterialApp.router(
+```
+
+Kenapa?
+
+Karena kita menggunakan **router system** dari `go_router`.
+
+---
+
+```dart
+routerConfig: _router,
+```
+
+Artinya:
+
+> "MaterialApp, gunakan router yang tadi aku buat di `_router`."
+
+Jadi hubungan mereka:
+
+```text
+GoRouter
+   ↓
+_router
+   ↓
+MaterialApp.router
+   ↓
+aplikasi tahu navigasinya
+```
+
+---
+
+# 13. `title`
+
+```dart
+title: 'Week 3 - Navigation',
+```
+
+Nama/title aplikasi.
+
+---
+
+# 14. `theme`
+
+```dart
+theme: ThemeData(
+  colorSchemeSeed: Colors.indigo,
+  useMaterial3: true,
+),
+```
+
+Ini bukan bagian utama `go_router`.
+
+### `ThemeData`
+
+Mengatur tampilan/theme aplikasi.
+
+### `colorSchemeSeed`
+
+Warna dasar yang digunakan Flutter untuk membuat color scheme.
+
+Di sini:
+
+```dart
+Colors.indigo
+```
+
+### `useMaterial3`
+
+```dart
+useMaterial3: true
+```
+
+Menggunakan Material Design 3.
+
+---
+
+# 15. Sekarang `HomePage`
+
+```dart
+class HomePage extends StatelessWidget {
+```
+
+### `class`
+
+Membuat blueprint/object baru.
+
+### `HomePage`
+
+Nama class kita.
+
+### `extends`
+
+Artinya class ini mewarisi kemampuan dari class lain.
+
+### `StatelessWidget`
+
+Widget yang **tidak menyimpan state yang berubah**.
+
+---
+
+```dart
+const HomePage({super.key});
+```
+
+Constructor `HomePage`.
+
+### `super.key`
+
+Memberikan `key` ke parent class `StatelessWidget`.
+
+Untuk sekarang anggap saja:
+
+> "Ini constructor standar widget Flutter."
+
+---
+
+# 16. `build`
+
+```dart
+@override
+Widget build(BuildContext context) {
+```
+
+### `@override`
+
+Memberitahu Dart bahwa kita sedang **meng-override method milik parent class**.
+
+`StatelessWidget` punya `build()`, lalu kita isi sendiri.
+
+### `Widget`
+
+Nilai yang dikembalikan oleh `build()` harus berupa Widget.
+
+### `context`
+
+Informasi posisi widget dalam widget tree.
+
+---
+
+# 17. `Scaffold`
+
+```dart
+return Scaffold(
+```
+
+`Scaffold` adalah kerangka dasar halaman Material.
+
+Biasanya berisi:
+
+```text
+Scaffold
+├── AppBar
+├── body
+├── floatingActionButton
+├── drawer
+└── ...
+```
+
+---
+
+# 18. `AppBar`
+
+```dart
+appBar: AppBar(
+  title: const Text('Home'),
+),
+```
+
+Membuat bar bagian atas.
+
+```text
+┌──────────────────┐
+│ Home             │
+├──────────────────┤
+│                  │
+│                  │
+└──────────────────┘
+```
+
+---
+
+# 19. `ListView.builder`
+
+```dart
+body: ListView.builder(
+```
+
+`ListView` → daftar yang bisa di-scroll.
+
+`builder` → item dibuat berdasarkan kebutuhan.
+
+Jadi cocok untuk list.
+
+---
+
+```dart
+itemCount: 10,
+```
+
+Jumlah item:
+
+```text
+10
+```
+
+Berarti index:
+
+```text
+0
+1
+2
+...
+9
+```
+
+---
+
+# 20. `itemBuilder`
+
+```dart
+itemBuilder: (context, index) =>
+```
+
+Fungsi untuk membuat setiap item.
+
+### `index`
+
+Nomor posisi item.
+
+Dimulai dari:
+
+```text
+0
+```
+
+bukan 1.
+
+---
+
+# 21. `ListTile`
+
+```dart
+ListTile(
+```
+
+Komponen list standar Flutter.
+
+Misalnya:
+
+```text
+┌──────────────────────┐
+│ Item 1               │
+├──────────────────────┤
+│ Item 2               │
+├──────────────────────┤
+│ Item 3               │
+└──────────────────────┘
+```
+
+---
+
+# 22. `Text('Item ${index + 1}')`
+
+```dart
+title: Text('Item ${index + 1}'),
+```
+
+`${...}` adalah **string interpolation**.
+
+Kalau:
+
+```dart
+index = 0
+```
+
+maka:
+
+```dart
+index + 1
+```
+
+jadi:
+
+```text
+1
+```
+
+Sehingga tampil:
+
+```text
+Item 1
+```
+
+Kalau `index = 9`:
+
+```text
+Item 10
+```
+
+Makanya index internal Flutter tetap 0 sampai 9, tapi tampilan ke user jadi 1 sampai 10.
+
+---
+
+# 23. `onTap`
+
+Nah ini pintu menuju halaman Detail.
+
+```dart
+onTap: () => context.go('/detail/${index + 1}'),
+```
+
+### `onTap`
+
+Kode yang dijalankan ketika `ListTile` ditekan.
+
+### `context.go()`
+
+Ini method dari `go_router`.
+
+Digunakan untuk melakukan navigasi ke path tertentu.
+
+Misalnya index = 0:
+
+```dart
+context.go('/detail/${index + 1}')
+```
+
+menjadi:
+
+```dart
+context.go('/detail/1')
+```
+
+Index = 4:
+
+```text
+/detail/5
+```
+
+---
+
+# 24. Kenapa `context.go()` bisa dipakai?
+
+Karena tadi kita sudah:
+
+```dart
+import 'package:go_router/go_router.dart';
+```
+
+Jadi `BuildContext` mendapatkan extension dari `go_router` yang menyediakan method seperti:
+
+```dart
+context.go(...)
+```
+
+---
+
+# 25. `DetailPage`
+
+```dart
+class DetailPage extends StatelessWidget {
+```
+
+Membuat halaman detail sebagai StatelessWidget.
+
+---
+
+```dart
+final String id;
+```
+
+Ini variabel yang menyimpan ID.
+
+### `String`
+
+Tipe data teks.
+
+Contoh:
+
+```dart
+'1'
+'5'
+'100'
+```
+
+### `final`
+
+Nilainya tidak diganti setelah object dibuat.
+
+---
+
+# 26. Constructor DetailPage
+
+```dart
+const DetailPage({
+  super.key,
+  required this.id,
+});
+```
+
+### `required`
+
+Berarti `id` **wajib diberikan** ketika membuat `DetailPage`.
+
+Makanya ini valid:
+
+```dart
+DetailPage(id: '5')
+```
+
+Tapi ini tidak:
+
+```dart
+DetailPage()
+```
+
+Karena `id` wajib ada.
+
+---
+
+# 27. Menampilkan ID
+
+```dart
+appBar: AppBar(
+  title: Text('Detail $id'),
+),
+```
+
+Kalau:
+
+```dart
+id = '5'
+```
+
+maka tampil:
+
+```text
+Detail 5
+```
+
+---
+
+```dart
+body: Center(
+  child: Text('Anda membuka item dengan id: $id'),
+),
+```
+
+### `Center`
+
+Meletakkan child di tengah.
+
+### `child`
+
+Widget yang berada di dalam `Center`.
+
+### `$id`
+
+String interpolation lagi.
+
+Kalau id = `5`:
+
+```text
+Anda membuka item dengan id: 5
+```
+
+---
+
+# 🧠 Jadi keseluruhan mekanismenya begini
+
+Misalnya kamu klik:
+
+**Item 7**
+
+Maka:
+
+```text
+HomePage
+   │
+   │ user tap Item 7
+   ↓
+onTap
+   │
+   ↓
+context.go('/detail/7')
+   │
+   ↓
+GoRouter mencari route
+   │
+   ↓
+path: 'detail/:id'
+   │
+   ↓
+:id = "7"
+   │
+   ↓
+state.pathParameters['id']
+   │
+   ↓
+DetailPage(id: "7")
+   │
+   ↓
+┌─────────────────────────────┐
+│ Detail 7                    │
+├─────────────────────────────┤
+│                             │
+│ Anda membuka item dengan    │
+│ id: 7                       │
+│                             │
+└─────────────────────────────┘
+```
+
+### Jadi 5 nama yang PALING penting kamu hafalin:
+
+| Nama             | Artinya                            |
+| ---------------- | ---------------------------------- |
+| `GoRouter`       | Pengatur navigasi                  |
+| `GoRoute`        | Aturan/alamat suatu halaman        |
+| `path`           | Alamat halaman                     |
+| `context.go()`   | Pergi ke alamat tertentu           |
+| `pathParameters` | Mengambil nilai dari parameter URL |
+
+Dan hubungan paling pentingnya:
+
+```text
+GoRouter
+   ↓
+punya banyak GoRoute
+   ↓
+setiap GoRoute punya path
+   ↓
+context.go() menuju path
+   ↓
+pathParameters mengambil data dari path
+```
+
+**Contoh paling gampang:**
+
+```text
+/detail/7
+   ↑    ↑
+ path   id
+```
+
+`detail` = nama jalur
+`7` = nilai `id`
+`:id` = tempat kosong yang bisa diisi nilai berbeda
+
+Jadi sebenarnya Week 3 ini sedang ngajarin kamu **navigasi + passing data lewat URL**, bukan sekadar "cara pindah halaman". Itu sebabnya ada `:id` dan `pathParameters`. 🫵😭

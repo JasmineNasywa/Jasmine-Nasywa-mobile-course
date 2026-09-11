@@ -1,0 +1,1526 @@
+NAHH ini masuk **Riverpod**, jadi konsepnya agak naik level dari `go_router` tadi 😭✊. Kalau `go_router` tugasnya **ngatur perpindahan halaman**, `Riverpod` tugasnya **ngatur dan menyimpan state/data aplikasi** supaya widget yang membutuhkan data bisa tahu ketika data berubah.
+
+Kita bedah **per nama** lagi.
+
+---
+
+# 0. Membuat project
+
+```bash
+flutter create week3_todo
+```
+
+* `flutter` → tool Flutter
+* `create` → membuat project baru
+* `week3_todo` → nama project
+
+Hasilnya kira-kira:
+
+```text
+week3_todo/
+├── android/
+├── ios/
+├── lib/
+├── test/
+├── pubspec.yaml
+└── ...
+```
+
+---
+
+```bash
+cd week3_todo
+```
+
+### `cd`
+
+**Change Directory**, alias pindah folder di terminal.
+
+Jadi terminal masuk ke:
+
+```text
+week3_todo/
+```
+
+---
+
+```bash
+flutter pub add flutter_riverpod
+```
+
+Sama seperti tadi:
+
+* `flutter` → Flutter CLI
+* `pub` → package manager Dart
+* `add` → tambahkan dependency
+* `flutter_riverpod` → package Riverpod untuk Flutter
+
+---
+
+# 1. `ProviderScope`
+
+Di `main.dart`:
+
+```dart
+void main() => runApp(
+  const ProviderScope(
+    child: MyApp(),
+  ),
+);
+```
+
+Ini bagian **WAJIB banget** untuk Riverpod.
+
+### `ProviderScope`
+
+Tempat Riverpod menyimpan dan mengelola **provider/state**.
+
+Gampangnya:
+
+```text
+ProviderScope
+      │
+      └── MyApp
+           ├── TodoPage
+           └── widget lain
+```
+
+Semua widget di bawah `ProviderScope` bisa mengakses provider Riverpod.
+
+Kalau provider itu seperti **lemari penyimpanan state**, `ProviderScope` adalah **ruangan yang menyediakan sistem lemari tersebut**.
+
+---
+
+# 2. `MyApp`
+
+```dart
+class MyApp extends StatelessWidget {
+```
+
+Ini widget utama aplikasi.
+
+Masih sama seperti sebelumnya:
+
+* `class` → membuat class
+* `MyApp` → nama class
+* `extends StatelessWidget` → widget tidak punya state lokal yang berubah
+
+---
+
+```dart
+MaterialApp(
+```
+
+Kali ini kita balik ke:
+
+```dart
+MaterialApp
+```
+
+bukan:
+
+```dart
+MaterialApp.router
+```
+
+Karena contoh ini **tidak menggunakan go_router**.
+
+---
+
+```dart
+home: const TodoPage(),
+```
+
+### `home`
+
+Menentukan halaman pertama yang ditampilkan.
+
+Jadi:
+
+```text
+Aplikasi
+   ↓
+TodoPage
+```
+
+---
+
+# 3. Sekarang bagian penting: `Todo`
+
+File:
+
+```text
+lib/providers/todo_provider.dart
+```
+
+Kita punya:
+
+```dart
+class Todo {
+```
+
+`Todo` adalah **model/data class**.
+
+Artinya dia merepresentasikan **satu tugas**.
+
+Misalnya:
+
+```text
+Todo
+├── title = "Belajar Flutter"
+└── done = false
+```
+
+---
+
+## Constructor
+
+```dart
+Todo(this.title, {this.done = false});
+```
+
+Kalau kita membuat:
+
+```dart
+Todo('Belajar Flutter')
+```
+
+maka otomatis:
+
+```text
+title = "Belajar Flutter"
+done = false
+```
+
+### `this.title`
+
+Parameter constructor langsung dimasukkan ke property `title`.
+
+### `{this.done = false}`
+
+Parameter bernama/opsional.
+
+Kalau tidak diberikan, default-nya:
+
+```text
+false
+```
+
+---
+
+# 4. Property
+
+```dart
+final String title;
+final bool done;
+```
+
+### `String`
+
+Data berupa teks.
+
+Contoh:
+
+```text
+"Belajar Flutter"
+"Kerjakan laporan"
+```
+
+### `bool`
+
+Boolean, hanya:
+
+```text
+true
+false
+```
+
+Jadi:
+
+```dart
+final String title;
+```
+
+menyimpan **nama tugas**.
+
+Sedangkan:
+
+```dart
+final bool done;
+```
+
+menyimpan apakah tugas sudah selesai.
+
+---
+
+# 5. `copyWith`
+
+Ini salah satu nama yang perlu kamu ingat.
+
+```dart
+Todo copyWith({String? title, bool? done}) =>
+    Todo(
+      title ?? this.title,
+      done: done ?? this.done,
+    );
+```
+
+Tujuannya:
+
+> **membuat Todo baru berdasarkan Todo lama, tetapi boleh mengganti beberapa property.**
+
+Misalnya ada:
+
+```dart
+Todo(
+  'Belajar Flutter',
+  done: false,
+)
+```
+
+Kita mau mengubah `done` menjadi `true`.
+
+Daripada mengubah object lama:
+
+```text
+Todo lama
+title = Belajar Flutter
+done = false
+```
+
+kita buat:
+
+```text
+Todo baru
+title = Belajar Flutter
+done = true
+```
+
+dengan:
+
+```dart
+todo.copyWith(done: true);
+```
+
+---
+
+# 6. `String?` dan `bool?`
+
+Kenapa ada tanda `?`
+
+```dart
+String? title
+bool? done
+```
+
+`?` berarti nilai tersebut **boleh null**.
+
+Jadi:
+
+```dart
+String
+```
+
+tidak boleh null.
+
+Sedangkan:
+
+```dart
+String?
+```
+
+boleh:
+
+```text
+"Belajar"
+```
+
+atau:
+
+```text
+null
+```
+
+Kenapa `copyWith` menggunakan nullable?
+
+Karena kita perlu membedakan:
+
+> "property ini mau diganti"
+
+dengan:
+
+> "property ini tidak mau diganti."
+
+---
+
+# 7. `??`
+
+```dart
+title ?? this.title
+```
+
+`??` artinya:
+
+> Kalau yang kiri **tidak null**, gunakan yang kiri. Kalau null, gunakan yang kanan.
+
+Contoh:
+
+```dart
+title = "Makan"
+```
+
+maka:
+
+```dart
+title ?? this.title
+```
+
+hasilnya:
+
+```text
+"Makan"
+```
+
+Tapi kalau:
+
+```dart
+title = null
+```
+
+maka:
+
+```text
+this.title
+```
+
+yang digunakan.
+
+Jadi:
+
+```dart
+Todo(
+  title ?? this.title,
+  done: done ?? this.done,
+)
+```
+
+berarti:
+
+> "Pakai nilai baru kalau diberikan, kalau nggak, pertahankan nilai lama."
+
+---
+
+# 8. `TodoListNotifier`
+
+Nah, ini mulai Riverpod banget.
+
+```dart
+class TodoListNotifier extends Notifier<List<Todo>> {
+```
+
+### `Notifier`
+
+Class Riverpod untuk **mengelola state yang bisa berubah**.
+
+### `List<Todo>`
+
+Ini tipe state yang dikelola.
+
+Artinya state kita adalah:
+
+```text
+List
+  ├── Todo
+  ├── Todo
+  ├── Todo
+  └── ...
+```
+
+Jadi `TodoListNotifier` bertugas mengatur **daftar Todo**.
+
+---
+
+# 9. `build()`
+
+```dart
+@override
+List<Todo> build() => const [];
+```
+
+`build()` menentukan **initial state**.
+
+```dart
+const []
+```
+
+artinya list kosong.
+
+Awalnya:
+
+```text
+Todo List
+└── kosong
+```
+
+Jadi ketika aplikasi pertama kali dibuka:
+
+```dart
+state = []
+```
+
+---
+
+# 10. `state`
+
+Ini salah satu kata PALING penting di Riverpod.
+
+`state` = **nilai/data yang sedang dikelola oleh Notifier**.
+
+Awalnya:
+
+```text
+state = []
+```
+
+Setelah tambah tugas:
+
+```text
+state = [
+  Todo("Belajar Flutter")
+]
+```
+
+Setelah tambah lagi:
+
+```text
+state = [
+  Todo("Belajar Flutter"),
+  Todo("Kerjakan tugas")
+]
+```
+
+---
+
+# 11. `add`
+
+```dart
+void add(String title) =>
+    state = [...state, Todo(title)];
+```
+
+Tujuannya menambahkan Todo.
+
+### `void`
+
+Tidak mengembalikan nilai.
+
+### `add(String title)`
+
+Menerima judul tugas.
+
+Misalnya:
+
+```dart
+add('Belajar Riverpod');
+```
+
+---
+
+## Terus `...state` apaan?
+
+```dart
+[...state, Todo(title)]
+```
+
+`...` disebut **spread operator**.
+
+Misalnya state sekarang:
+
+```text
+[
+  Todo A,
+  Todo B
+]
+```
+
+Maka:
+
+```dart
+[...state, Todo C]
+```
+
+menjadi:
+
+```text
+[
+  Todo A,
+  Todo B,
+  Todo C
+]
+```
+
+Yang penting:
+
+**kita tidak mengubah list lama.**
+
+Kita membuat **list baru**.
+
+---
+
+# 12. Kenapa nggak boleh `state.add()`?
+
+Karena ini:
+
+```dart
+state.add(Todo(title));
+```
+
+mengubah list yang sama.
+
+Riverpod mengandalkan perubahan state untuk mengetahui bahwa UI perlu diperbarui.
+
+Lebih aman:
+
+```dart
+state = [...state, Todo(title)];
+```
+
+Jadi:
+
+```text
+list lama
+   ↓
+buat list baru
+   ↓
+state = list baru
+   ↓
+Riverpod tahu state berubah
+   ↓
+UI rebuild
+```
+
+Ini disebut **immutability**.
+
+---
+
+# 13. `toggle`
+
+```dart
+void toggle(int index) {
+```
+
+Fungsinya mengganti status:
+
+```text
+belum selesai → selesai
+selesai → belum selesai
+```
+
+`index` menunjukkan Todo ke berapa.
+
+---
+
+```dart
+final todos = [...state];
+```
+
+Membuat salinan list.
+
+Misalnya:
+
+```text
+state
+[A, B, C]
+```
+
+menjadi:
+
+```text
+todos
+[A, B, C]
+```
+
+sebagai list baru.
+
+---
+
+```dart
+todos[index] = todos[index].copyWith(
+  done: !todos[index].done,
+);
+```
+
+Ini bagian yang agak padat.
+
+Misalnya:
+
+```text
+todos[index].done = false
+```
+
+Operator:
+
+```dart
+!
+```
+
+di sini berarti **NOT**.
+
+Jadi:
+
+```dart
+!false
+```
+
+menjadi:
+
+```text
+true
+```
+
+dan:
+
+```dart
+!true
+```
+
+menjadi:
+
+```text
+false
+```
+
+Maka:
+
+```dart
+done: !todos[index].done
+```
+
+berarti:
+
+> **balik status `done`.**
+
+Lalu:
+
+```dart
+copyWith(...)
+```
+
+membuat Todo baru dengan status baru.
+
+---
+
+Kemudian:
+
+```dart
+state = todos;
+```
+
+Mengganti state dengan list baru tadi.
+
+---
+
+# 14. `remove`
+
+```dart
+void remove(int index) => state = [...state]..removeAt(index);
+```
+
+Tujuannya menghapus Todo.
+
+Ada sedikit sintaks Dart yang ngeselin di sini 😭:
+
+```dart
+..removeAt(index)
+```
+
+`..` disebut **cascade operator**.
+
+Secara konsep:
+
+```dart
+final todos = [...state];
+todos.removeAt(index);
+state = todos;
+```
+
+kurang lebih itulah yang dilakukan.
+
+Jadi:
+
+```dart
+[...state]..removeAt(index)
+```
+
+artinya:
+
+> buat list baru → hapus item pada index tersebut → gunakan list itu sebagai state.
+
+---
+
+# 15. `todoListProvider`
+
+```dart
+final todoListProvider =
+    NotifierProvider<TodoListNotifier, List<Todo>>(
+      TodoListNotifier.new,
+    );
+```
+
+INI adalah **provider yang akan dipakai UI**.
+
+### `NotifierProvider`
+
+Menghubungkan:
+
+```text
+TodoListNotifier
+```
+
+dengan:
+
+```text
+UI Flutter
+```
+
+---
+
+### `<TodoListNotifier, List<Todo>>`
+
+Dua tipe:
+
+```text
+TodoListNotifier
+      ↑
+ siapa yang mengelola state
+
+List<Todo>
+      ↑
+ tipe state-nya
+```
+
+---
+
+### `TodoListNotifier.new`
+
+Ini constructor tear-off.
+
+Gampangnya:
+
+> "Riverpod, kalau butuh notifier ini, buat object `TodoListNotifier`."
+
+---
+
+# 16. `ConsumerWidget`
+
+Sekarang kita ke:
+
+```text
+lib/pages/todo_page.dart
+```
+
+```dart
+class TodoPage extends ConsumerWidget {
+```
+
+Ini pengganti `StatelessWidget` ketika widget perlu **mengakses Riverpod**.
+
+Jadi:
+
+```text
+StatelessWidget
+    ↓
+widget biasa
+
+ConsumerWidget
+    ↓
+widget yang bisa membaca provider
+```
+
+---
+
+# 17. `WidgetRef ref`
+
+```dart
+Widget build(BuildContext context, WidgetRef ref)
+```
+
+Nah ini penting.
+
+Biasanya:
+
+```dart
+build(BuildContext context)
+```
+
+Sekarang:
+
+```dart
+build(BuildContext context, WidgetRef ref)
+```
+
+### `ref`
+
+`WidgetRef` adalah alat untuk berinteraksi dengan provider Riverpod.
+
+Lewat `ref`, kita bisa:
+
+```dart
+ref.watch(...)
+ref.read(...)
+```
+
+---
+
+# 18. `ref.watch`
+
+```dart
+final todos = ref.watch(todoListProvider);
+```
+
+Artinya:
+
+> "Ambil state dari `todoListProvider`, dan **pantau perubahannya**."
+
+Misalnya state:
+
+```text
+[]
+```
+
+UI melihat:
+
+```text
+Belum ada tugas
+```
+
+Kemudian user menambahkan:
+
+```text
+Belajar Flutter
+```
+
+state berubah:
+
+```text
+[Belajar Flutter]
+```
+
+Riverpod melihat bahwa widget melakukan:
+
+```dart
+ref.watch(todoListProvider)
+```
+
+maka `TodoPage` **rebuild**.
+
+---
+
+# 19. `ref.read`
+
+Berbeda dengan:
+
+```dart
+ref.watch(...)
+```
+
+`read` berarti:
+
+> **ambil provider sekarang, tapi tidak berlangganan perubahan state-nya.**
+
+Contohnya:
+
+```dart
+ref.read(todoListProvider.notifier)
+```
+
+Kita mau mengambil **Notifier-nya**, bukan daftar Todo-nya.
+
+Lalu kita panggil:
+
+```dart
+.toggle(index)
+```
+
+atau:
+
+```dart
+.add(...)
+```
+
+atau:
+
+```dart
+.remove(...)
+```
+
+---
+
+# 20. `.notifier`
+
+```dart
+todoListProvider.notifier
+```
+
+Kalau:
+
+```dart
+todoListProvider
+```
+
+memberikan **state**:
+
+```text
+List<Todo>
+```
+
+maka:
+
+```dart
+todoListProvider.notifier
+```
+
+memberikan **pengelolanya**:
+
+```text
+TodoListNotifier
+```
+
+Jadi:
+
+```dart
+ref.read(todoListProvider.notifier).add(...)
+```
+
+dibaca:
+
+> Ambil pengelola Todo → jalankan method `add()`.
+
+---
+
+# 21. `todos.isEmpty`
+
+```dart
+body: todos.isEmpty
+```
+
+`isEmpty` mengecek apakah List kosong.
+
+```text
+[] → true
+```
+
+sedangkan:
+
+```text
+[Todo A] → false
+```
+
+---
+
+# 22. Operator `? :`
+
+```dart
+todos.isEmpty
+    ? const Center(child: Text('Belum ada tugas'))
+    : ListView.builder(...)
+```
+
+Ini disebut **ternary operator**.
+
+Formatnya:
+
+```text
+kondisi ? kalau_true : kalau_false
+```
+
+Jadi:
+
+```text
+Kalau Todo kosong
+      ↓
+"Belum ada tugas"
+
+Kalau tidak kosong
+      ↓
+tampilkan ListView
+```
+
+---
+
+# 23. `Checkbox`
+
+```dart
+Checkbox(
+  value: todos[index].done,
+```
+
+`Checkbox` menampilkan kotak centang.
+
+### `value`
+
+Status checkbox.
+
+Kalau:
+
+```text
+done = true
+```
+
+checkbox dicentang.
+
+Kalau:
+
+```text
+done = false
+```
+
+tidak dicentang.
+
+---
+
+# 24. `onChanged`
+
+```dart
+onChanged: (_) =>
+    ref.read(todoListProvider.notifier).toggle(index),
+```
+
+Ketika checkbox berubah:
+
+```text
+klik checkbox
+    ↓
+onChanged
+    ↓
+toggle(index)
+    ↓
+done dibalik
+    ↓
+state berubah
+    ↓
+UI rebuild
+```
+
+### `_`
+
+```dart
+(_)
+```
+
+Artinya kita menerima parameter dari `onChanged`, tapi **nggak membutuhkan nilainya**.
+
+Makanya diberi nama `_`.
+
+---
+
+# 25. `TextDecoration.lineThrough`
+
+```dart
+decoration: todos[index].done
+    ? TextDecoration.lineThrough
+    : null
+```
+
+Kalau selesai:
+
+```text
+~~Belajar Flutter~~
+```
+
+secara visual dicoret.
+
+Kalau belum selesai:
+
+```text
+Belajar Flutter
+```
+
+tidak dicoret.
+
+---
+
+# 26. `IconButton`
+
+```dart
+IconButton(
+  icon: const Icon(Icons.delete),
+```
+
+Tombol dengan ikon tempat sampah.
+
+---
+
+```dart
+onPressed: () =>
+    ref.read(todoListProvider.notifier).remove(index),
+```
+
+Ketika ditekan:
+
+```text
+delete
+ ↓
+remove(index)
+ ↓
+state baru
+ ↓
+UI rebuild
+```
+
+---
+
+# 27. `FloatingActionButton`
+
+```dart
+floatingActionButton: FloatingActionButton(
+```
+
+Tombol bulat yang biasanya mengambang di kanan bawah.
+
+```dart
+child: const Icon(Icons.add),
+```
+
+Ikonnya `+`.
+
+---
+
+```dart
+onPressed: () => _showAddDialog(context, ref),
+```
+
+Ketika ditekan, panggil:
+
+```dart
+_showAddDialog(...)
+```
+
+---
+
+# 28. `_showAddDialog`
+
+```dart
+void _showAddDialog(
+  BuildContext context,
+  WidgetRef ref,
+)
+```
+
+Method untuk menampilkan dialog input.
+
+### `_showAddDialog`
+
+Ada `_` di depan → private method dalam file/library tersebut.
+
+---
+
+# 29. `TextEditingController`
+
+```dart
+final controller = TextEditingController();
+```
+
+Ini digunakan untuk **mengambil/mengontrol teks dari TextField**.
+
+Misalnya user mengetik:
+
+```text
+Belajar Riverpod
+```
+
+maka:
+
+```dart
+controller.text
+```
+
+berisi:
+
+```text
+"Belajar Riverpod"
+```
+
+---
+
+# 30. `showDialog`
+
+```dart
+showDialog(
+  context: context,
+```
+
+Menampilkan dialog di atas halaman.
+
+Hasilnya kira-kira:
+
+```text
+┌───────────────────────┐
+│ Tugas baru            │
+│                       │
+│ [ Belajar Flutter ]   │
+│                       │
+│       Batal  Tambah   │
+└───────────────────────┘
+```
+
+---
+
+# 31. `AlertDialog`
+
+```dart
+AlertDialog(
+```
+
+Komponen dialog Material.
+
+---
+
+# 32. `TextField`
+
+```dart
+TextField(
+  controller: controller,
+  autofocus: true,
+)
+```
+
+Tempat user mengetik tugas.
+
+### `controller`
+
+Menghubungkan TextField dengan:
+
+```dart
+controller
+```
+
+yang tadi dibuat.
+
+### `autofocus: true`
+
+Begitu dialog muncul, cursor langsung berada di TextField.
+
+---
+
+# 33. `Navigator.pop`
+
+Tombol Batal:
+
+```dart
+onPressed: () => Navigator.pop(context),
+```
+
+`Navigator.pop()` berarti:
+
+> **keluar dari halaman/dialog yang sedang berada di atas.**
+
+Dalam kasus ini:
+
+```text
+AlertDialog
+   ↓
+Navigator.pop()
+   ↓
+dialog ditutup
+```
+
+---
+
+# 34. `controller.text.trim()`
+
+Ini juga perlu hafal.
+
+```dart
+controller.text
+```
+
+mengambil teks.
+
+Misalnya user mengetik:
+
+```text
+   Belajar Flutter
+```
+
+`trim()` menghilangkan spasi di awal dan akhir:
+
+```text
+Belajar Flutter
+```
+
+---
+
+# 35. `isNotEmpty`
+
+```dart
+if (controller.text.trim().isNotEmpty)
+```
+
+Artinya:
+
+> Kalau teks setelah dibersihkan **tidak kosong**.
+
+Jadi kalau user cuma mengetik:
+
+```text
+"     "
+```
+
+maka setelah `trim()`:
+
+```text
+""
+```
+
+dan tidak akan ditambahkan.
+
+---
+
+# 36. Menambahkan tugas
+
+```dart
+ref
+    .read(todoListProvider.notifier)
+    .add(controller.text.trim());
+```
+
+Baca dari bawah ke atas:
+
+```text
+controller.text.trim()
+        ↓
+ambil teks tugas
+
+.add(...)
+        ↓
+tambahkan Todo
+
+todoListProvider.notifier
+        ↓
+ambil pengelola Todo
+
+ref.read(...)
+        ↓
+akses provider
+```
+
+Jadi sederhananya:
+
+```text
+User mengetik tugas
+       ↓
+controller mengambil teks
+       ↓
+ref.read(...)
+       ↓
+TodoListNotifier
+       ↓
+add()
+       ↓
+state berubah
+       ↓
+Riverpod rebuild UI
+```
+
+---
+
+# 🧠 BESAR BANGETNYA: Riverpod itu sebenarnya begini
+
+Kalau kamu cuma menghafalkan kode, nanti pas dosen ganti satu baris kamu:
+
+**🧍‍♀️:** "kenapa semuanya mati." 😭
+
+Jadi pahami 4 komponen ini:
+
+```text
+                RIVERPOD
+                   │
+        ┌──────────┴──────────┐
+        │                     │
+     Provider              Notifier
+        │                     │
+ "tempat akses state"    "pengelola state"
+        │                     │
+        └──────────┬──────────┘
+                   ↓
+                 State
+                   │
+                   ↓
+              UI / Widget
+```
+
+Dalam kodemu:
+
+```text
+todoListProvider
+       ↓
+NotifierProvider
+       ↓
+TodoListNotifier
+       ↓
+List<Todo>
+       ↓
+TodoPage
+```
+
+Dan interaksinya:
+
+```text
+                    TodoListNotifier
+                    ┌──────────────┐
+                    │ state        │
+                    │ [Todo, Todo] │
+                    │              │
+                    │ add()        │
+                    │ toggle()     │
+                    │ remove()     │
+                    └──────┬───────┘
+                           │
+                  todoListProvider
+                           │
+             ┌─────────────┴─────────────┐
+             ↓                           ↓
+        ref.watch()                 ref.read()
+             ↓                           ↓
+        ambil state              ambil notifier
+        + dengarkan              untuk menjalankan
+        perubahan                add/toggle/remove
+             │
+             ↓
+             UI
+```
+
+### Kalau buat ujian, kata kuncinya:
+
+| Istilah            | Arti gampang                                    |
+| ------------------ | ----------------------------------------------- |
+| `ProviderScope`    | Wadah agar Riverpod tersedia                    |
+| `Provider`         | Penyedia state/data                             |
+| `Notifier`         | Pengelola state                                 |
+| `state`            | Data yang sedang dikelola                       |
+| `NotifierProvider` | Penghubung Notifier dengan UI                   |
+| `ConsumerWidget`   | Widget yang bisa memakai Riverpod               |
+| `WidgetRef`        | Alat untuk mengakses provider                   |
+| `ref.watch()`      | Ambil + dengarkan perubahan                     |
+| `ref.read()`       | Ambil tanpa mendengarkan perubahan              |
+| `.notifier`        | Mengakses pengelola state                       |
+| `copyWith()`       | Membuat object baru dengan perubahan tertentu   |
+| `...state`         | Menyalin isi list ke list baru                  |
+| `immutability`     | Tidak mengubah object/list lama secara langsung |
+
+**Dan konsep inti Week 3 ini kemungkinan besar adalah:**
+
+> **State management menggunakan Riverpod, dengan prinsip immutability agar perubahan state dapat dideteksi dan UI melakukan rebuild.**
+
+Jadi bedanya dengan kode `go_router` sebelumnya:
+
+```text
+go_router
+→ "GIMANA PINDAH HALAMAN?"
+
+Riverpod
+→ "GIMANA DATA YANG DIPAKAI BANYAK WIDGET DIATUR DAN DIUPDATE?"
+```
+
+Dua-duanya sama-sama package tambahan, tapi problem yang mereka selesaikan **beda total**. Flutter memang hobi memberi manusia 17 istilah untuk sesuatu yang pada dasarnya cuma "pindah halaman" dan "ngurus data". 😭✊

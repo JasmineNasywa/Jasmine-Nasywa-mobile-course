@@ -1,0 +1,757 @@
+NAHH ini masih keluarga Riverpod, tapi sekarang masuk **state yang prosesnya nggak langsung selesai** alias asynchronous. 😭✊
+
+Kalau yang tadi:
+
+```text
+Todo
+ ↓
+langsung ada datanya
+```
+
+yang ini:
+
+```text
+minta data
+ ↓
+⏳ nunggu
+ ↓
+berhasil → data
+atau
+gagal → error
+```
+
+Dan `AsyncValue` dibuat supaya tiga kondisi itu nggak perlu kamu kelola manual.
+
+---
+
+# 1. `AsyncValue<T>`
+
+```dart
+AsyncValue<List<String>>
+```
+
+Ini tipe yang bisa merepresentasikan **3 keadaan**:
+
+```text
+┌─────────────────────────┐
+│ AsyncValue              │
+├─────────────────────────┤
+│ Loading ⏳              │
+│ Data ✅                 │
+│ Error ❌                │
+└─────────────────────────┘
+```
+
+### `T`
+
+`T` adalah tipe data yang nanti akan diterima ketika proses berhasil.
+
+Di sini:
+
+```dart
+AsyncValue<List<String>>
+```
+
+berarti:
+
+> "Saya sedang mengurus operasi asynchronous yang kalau berhasil menghasilkan `List<String>`."
+
+Jadi `T = List<String>`.
+
+---
+
+# 2. `AsyncNotifier`
+
+```dart
+class ProductsNotifier extends AsyncNotifier<List<String>> {
+```
+
+Kalau sebelumnya:
+
+```dart
+Notifier<List<Todo>>
+```
+
+sekarang:
+
+```dart
+AsyncNotifier<List<String>>
+```
+
+Bedanya:
+
+### `Notifier`
+
+Untuk state biasa:
+
+```text
+data langsung tersedia
+```
+
+### `AsyncNotifier`
+
+Untuk state yang membutuhkan proses asynchronous:
+
+```text
+ambil data
+↓
+tunggu
+↓
+hasil
+```
+
+Contohnya cocok untuk:
+
+* API
+* database
+* Firebase
+* file
+* operasi network
+* dan berbagai hal yang bikin program harus menunggu manusia/server melakukan sesuatu. 😭
+
+---
+
+# 3. `build()` asynchronous
+
+```dart
+@override
+Future<List<String>> build() async {
+```
+
+### `Future`
+
+`Future` berarti:
+
+> **nilai yang akan tersedia nanti.**
+
+Misalnya:
+
+```dart
+Future<String>
+```
+
+berarti nanti akan menghasilkan `String`.
+
+Sedangkan:
+
+```dart
+Future<List<String>>
+```
+
+berarti nanti menghasilkan:
+
+```text
+List<String>
+```
+
+---
+
+### `async`
+
+```dart
+async
+```
+
+menandakan bahwa fungsi tersebut menjalankan operasi asynchronous dan dapat menggunakan:
+
+```dart
+await
+```
+
+---
+
+# 4. `await`
+
+```dart
+await Future.delayed(
+  const Duration(seconds: 2),
+);
+```
+
+Ini sengaja bikin program menunggu 2 detik.
+
+### `Future.delayed`
+
+Membuat Future yang selesai setelah waktu tertentu.
+
+```text
+Future.delayed(2 detik)
+          ↓
+        ⏳
+          ↓
+      selesai
+```
+
+Di kode ini cuma **simulasi network**.
+
+Bayangkan sebenarnya:
+
+```text
+Aplikasi
+ ↓
+request API
+ ↓
+⏳ server menjawab
+ ↓
+data produk
+```
+
+Mereka pakai delay supaya kamu bisa melihat kondisi `loading`.
+
+---
+
+# 5. `return`
+
+```dart
+return [
+  'Keyboard',
+  'Mouse',
+  'Monitor',
+];
+```
+
+Setelah 2 detik, `build()` mengembalikan data.
+
+Jadi:
+
+```text
+Loading
+   ↓
+2 detik
+   ↓
+Data
+   ↓
+Keyboard
+Mouse
+Monitor
+```
+
+---
+
+# 6. `state` sekarang
+
+Ini penting.
+
+Karena menggunakan:
+
+```dart
+AsyncNotifier<List<String>>
+```
+
+maka `state` bukan cuma:
+
+```text
+List<String>
+```
+
+tetapi berupa:
+
+```text
+AsyncValue<List<String>>
+```
+
+Jadi `state` bisa berada dalam kondisi:
+
+```text
+AsyncLoading
+AsyncData<List<String>>
+AsyncError
+```
+
+Ini inti dari `AsyncValue`.
+
+---
+
+# 7. `refresh()`
+
+```dart
+Future<void> refresh() async {
+```
+
+Method ini digunakan untuk **mengambil ulang data**.
+
+### `Future<void>`
+
+Artinya:
+
+> prosesnya asynchronous, tetapi setelah selesai tidak mengembalikan data yang perlu dipakai pemanggil.
+
+---
+
+# 8. `state = const AsyncLoading()`
+
+```dart
+state = const AsyncLoading();
+```
+
+Ini memberitahu Riverpod:
+
+> **"Sekarang saya sedang loading."**
+
+State berubah menjadi:
+
+```text
+AsyncLoading
+     ↓
+UI melihat loading
+     ↓
+CircularProgressIndicator
+```
+
+---
+
+# 9. `AsyncValue.guard`
+
+Ini salah satu bagian yang paling penting.
+
+```dart
+state = await AsyncValue.guard(() => _fetch());
+```
+
+`AsyncValue.guard()` digunakan untuk menjalankan Future dan **menangkap error/exception secara otomatis**.
+
+Secara konsep:
+
+```text
+_fetch()
+   │
+   ├── berhasil → AsyncData
+   │
+   └── gagal    → AsyncError
+```
+
+Jadi kamu nggak perlu menulis:
+
+```dart
+try {
+  final result = await _fetch();
+  state = AsyncData(result);
+} catch (e, stack) {
+  state = AsyncError(e, stack);
+}
+```
+
+`guard()` menangani pola itu.
+
+Makanya catatan di soal bilang:
+
+> hindari `try/catch` manual yang tersebar.
+
+Bukan berarti `try/catch` **haram**. Cuma untuk pola standar seperti ini, `AsyncValue.guard()` lebih rapi.
+
+---
+
+# 10. `_fetch()`
+
+```dart
+Future<List<String>> _fetch() async {
+```
+
+Ini method private untuk mengambil data.
+
+Kenapa ada `_`?
+
+```text
+_fetch
+ ↑
+private
+```
+
+Artinya method ini hanya dimaksudkan digunakan di library/file tersebut.
+
+---
+
+```dart
+await Future.delayed(
+  const Duration(seconds: 1),
+);
+```
+
+Simulasi request selama 1 detik.
+
+Kemudian:
+
+```dart
+return [
+  'Keyboard',
+  'Mouse',
+  'Monitor',
+  'Headset',
+];
+```
+
+Perhatikan sekarang ada:
+
+```text
+Headset
+```
+
+Jadi `refresh()` mengambil data baru yang berbeda dari data awal.
+
+---
+
+# 11. `AsyncNotifierProvider`
+
+```dart
+final productsProvider =
+    AsyncNotifierProvider<ProductsNotifier, List<String>>(
+        ProductsNotifier.new);
+```
+
+Ini mirip banget dengan yang tadi:
+
+```dart
+NotifierProvider<TodoListNotifier, List<Todo>>
+```
+
+Bedanya sekarang:
+
+```dart
+AsyncNotifierProvider
+```
+
+karena Notifier-nya asynchronous.
+
+Strukturnya:
+
+```text
+ProductsNotifier
+       ↓
+mengelola
+       ↓
+List<String>
+       ↑
+AsyncNotifierProvider
+       ↑
+productsProvider
+```
+
+---
+
+# 12. Sekarang UI
+
+```dart
+class ProductPage extends ConsumerWidget {
+```
+
+Sama seperti Todo tadi.
+
+Karena kita mau menggunakan Riverpod:
+
+```text
+ConsumerWidget
+```
+
+---
+
+# 13. `ref.watch`
+
+```dart
+final productsAsync = ref.watch(productsProvider);
+```
+
+Ini mengambil state dari provider **dan mendengarkan perubahannya**.
+
+Nama variabelnya:
+
+```text
+productsAsync
+```
+
+karena isinya bukan langsung:
+
+```text
+List<String>
+```
+
+tetapi:
+
+```text
+AsyncValue<List<String>>
+```
+
+---
+
+# 14. `productsAsync.when`
+
+INI bagian paling penting di UI.
+
+```dart
+body: productsAsync.when(
+```
+
+`when()` digunakan untuk menangani **tiga kemungkinan AsyncValue**:
+
+```dart
+loading:
+error:
+data:
+```
+
+Jadi kamu seperti bilang:
+
+> "Kalau loading, lakukan ini. Kalau error, lakukan itu. Kalau berhasil, tampilkan datanya."
+
+---
+
+# 15. `loading`
+
+```dart
+loading: () => const Center(
+  child: CircularProgressIndicator(),
+),
+```
+
+Ketika:
+
+```text
+AsyncValue = Loading
+```
+
+UI menampilkan:
+
+```text
+       ◯
+      loading...
+```
+
+`CircularProgressIndicator` = indikator loading berputar.
+
+---
+
+# 16. `error`
+
+```dart
+error: (err, stack) => Center(
+```
+
+Kalau request gagal:
+
+```text
+AsyncValue = Error
+```
+
+`err` berisi exception/error.
+
+`stack` berisi **stack trace**, yaitu informasi jejak lokasi error dalam program.
+
+Lalu:
+
+```dart
+Text('Gagal memuat: $err')
+```
+
+menampilkan pesan error.
+
+---
+
+# 17. `ref.invalidate`
+
+```dart
+onPressed: () => ref.invalidate(productsProvider),
+```
+
+Ini menarik.
+
+`invalidate()` artinya kira-kira:
+
+> **"Riverpod, provider ini sudah tidak valid. Jalankan ulang/rebuild provider-nya."**
+
+Jadi ketika user tekan:
+
+```text
+Coba lagi
+```
+
+alur:
+
+```text
+Error
+ ↓
+Coba lagi
+ ↓
+ref.invalidate(productsProvider)
+ ↓
+ProductsNotifier build()
+ ↓
+ambil data lagi
+ ↓
+Loading
+ ↓
+Data / Error
+```
+
+Ini cara yang praktis untuk **retry**.
+
+---
+
+# 18. `data`
+
+```dart
+data: (products) => ListView.builder(
+```
+
+Kalau asynchronous operation berhasil:
+
+```text
+AsyncValue = Data
+```
+
+`products` berisi:
+
+```dart
+[
+  'Keyboard',
+  'Mouse',
+  'Monitor'
+]
+```
+
+atau setelah refresh:
+
+```dart
+[
+  'Keyboard',
+  'Mouse',
+  'Monitor',
+  'Headset'
+]
+```
+
+Kemudian dibuat menjadi `ListView`.
+
+---
+
+# 19. Jadi `when()` itu kayak percabangan
+
+Secara konsep:
+
+```text
+             AsyncValue
+                 │
+        ┌────────┼────────┐
+        ↓        ↓        ↓
+     loading    error     data
+        │        │         │
+        ↓        ↓         ↓
+     Loading   Error      List
+      UI        UI         UI
+```
+
+Daripada kamu menulis banyak:
+
+```dart
+if (...)
+else if (...)
+else
+```
+
+`when()` membuat pola asynchronous state jadi lebih jelas.
+
+---
+
+# 🧠 Bedanya dengan kode Todo sebelumnya
+
+Ini penting banget.
+
+### Todo:
+
+```dart
+Notifier<List<Todo>>
+```
+
+State-nya:
+
+```text
+List<Todo>
+```
+
+Contoh:
+
+```text
+[Todo A, Todo B]
+```
+
+Tidak ada konsep loading/error bawaan.
+
+---
+
+### Products:
+
+```dart
+AsyncNotifier<List<String>>
+```
+
+State-nya:
+
+```text
+AsyncValue<List<String>>
+```
+
+Bisa:
+
+```text
+Loading
+Data
+Error
+```
+
+Jadi:
+
+```text
+Notifier
+   ↓
+state biasa
+
+AsyncNotifier
+   ↓
+state asynchronous
+   ↓
+Loading / Data / Error
+```
+
+---
+
+# 🔥 Hafalan paling penting
+
+Kalau dosen tiba-tiba nanya:
+
+**"Apa fungsi AsyncValue?"**
+
+Jawaban:
+
+> `AsyncValue<T>` digunakan untuk merepresentasikan state asynchronous seperti **loading, data, dan error** dalam satu tipe.
+
+**"Apa fungsi AsyncNotifier?"**
+
+> `AsyncNotifier` digunakan untuk mengelola state yang diperoleh melalui proses asynchronous.
+
+**"Apa fungsi `ref.watch()`?"**
+
+> Mengakses provider sekaligus mendengarkan perubahan state sehingga UI dapat melakukan rebuild.
+
+**"Apa fungsi `AsyncValue.guard()`?"**
+
+> Menjalankan Future dan secara otomatis mengubah hasilnya menjadi `AsyncData` jika berhasil atau `AsyncError` jika terjadi exception.
+
+**"Apa fungsi `ref.invalidate()`?"**
+
+> Membuat provider dianggap tidak valid sehingga provider dapat dijalankan/rebuild kembali, misalnya untuk fitur **Coba lagi**.
+
+Dan keseluruhan konsepnya:
+
+```text
+API / database / network
+          ↓
+    AsyncNotifier
+          ↓
+      AsyncValue
+      ↙    ↓    ↘
+ Loading  Data  Error
+    ↓      ↓      ↓
+   ⏳     📦     ❌
+          ↓
+          UI
+```
+
+Jadi kalau **Riverpod dasar = "ngurus data"**, maka **AsyncValue = "ngurus data yang belum tentu sudah ada, bisa gagal, dan butuh waktu."** 😭✊
