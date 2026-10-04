@@ -1,0 +1,608 @@
+# token_store.dart
+
+YESS, ini sebenarnya **cuma class kecil buat nyimpen token secara aman di Flutter**. Kalau dibedah pelan-pelan, kodenya nggak seseram bentuknya 😭✋
+
+## Gambaran besarnya
+
+`TokenStore` tugasnya cuma 3:
+
+```text
+LOGIN BERHASIL
+     ↓
+save access token + refresh token
+     ↓
+FlutterSecureStorage
+     ↓
+token tersimpan aman
+```
+
+Lalu ketika perlu:
+
+```text
+readAccess()  → ambil access token
+readRefresh() → ambil refresh token
+clear()       → hapus token
+```
+
+---
+
+## 1. Import
+
+```dart
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+```
+
+Ini mengambil package **Flutter Secure Storage**.
+
+Bedanya dengan menyimpan token di variabel biasa:
+
+```dart
+String token = 'abc123';
+```
+
+atau penyimpanan biasa, `FlutterSecureStorage` memang ditujukan untuk menyimpan data sensitif seperti token secara lebih aman.
+
+---
+
+## 2. Membuat class
+
+```dart
+class TokenStore {
+```
+
+Kita bikin class bernama `TokenStore`.
+
+Anggap saja ini **lemari khusus token**.
+
+Daripada seluruh aplikasi langsung berinteraksi dengan `FlutterSecureStorage`, kita bikin satu class yang mengurus semua operasi token.
+
+Jadi nanti cukup:
+
+```dart
+tokenStore.save(...)
+```
+
+atau:
+
+```dart
+tokenStore.readAccess()
+```
+
+---
+
+## 3. Constructor
+
+```dart
+TokenStore({FlutterSecureStorage? storage})
+    : _storage = storage ?? const FlutterSecureStorage();
+```
+
+Nah ini bagian yang kelihatannya paling ngeselin. 😭
+
+Artinya:
+
+> `TokenStore` boleh dikasih objek `FlutterSecureStorage` dari luar. Kalau tidak dikasih, buat storage baru sendiri.
+
+Misalnya normal:
+
+```dart
+final tokenStore = TokenStore();
+```
+
+Maka dia menggunakan:
+
+```dart
+const FlutterSecureStorage()
+```
+
+Tapi bisa juga:
+
+```dart
+final storage = FlutterSecureStorage();
+final tokenStore = TokenStore(storage: storage);
+```
+
+Kenapa dibuat bisa menerima dari luar?
+
+Biasanya supaya **lebih gampang dites**, karena saat testing kita bisa memberikan storage palsu/mock.
+
+---
+
+## 4. Menyimpan storage
+
+```dart
+final FlutterSecureStorage _storage;
+```
+
+Ini adalah variabel yang menyimpan objek storage tadi.
+
+Tanda `_`:
+
+```dart
+_storage
+```
+
+menunjukkan bahwa field tersebut **private dalam library Dart tersebut**.
+
+Jadi class lain nggak seharusnya mengakses `_storage` secara langsung.
+
+---
+
+## 5. Nama key token
+
+```dart
+static const _accessKey = 'access_token';
+static const _refreshKey = 'refresh_token';
+```
+
+Ini cuma menentukan **nama tempat penyimpanan**.
+
+Bayangkan storage seperti lemari:
+
+```text
+FlutterSecureStorage
+│
+├── "access_token" → "eyJhbGci..."
+└── "refresh_token" → "eyJhbGci..."
+```
+
+Kenapa pakai variable daripada langsung nulis string di mana-mana?
+
+Daripada:
+
+```dart
+_storage.write(key: 'access_token', ...)
+```
+
+di banyak tempat, kita cukup pakai:
+
+```dart
+_accessKey
+```
+
+Lebih konsisten dan mengurangi typo.
+
+---
+
+# 6. `save()`
+
+```dart
+Future<void> save({
+  required String access,
+  required String refresh,
+}) async {
+  await _storage.write(key: _accessKey, value: access);
+  await _storage.write(key: _refreshKey, value: refresh);
+}
+```
+
+Ini fungsi untuk **menyimpan dua token**.
+
+Pemakaiannya kira-kira:
+
+```dart
+await tokenStore.save(
+  access: accessToken,
+  refresh: refreshToken,
+);
+```
+
+Kemudian:
+
+```text
+accessToken
+     ↓
+'access_token'
+     ↓
+Secure Storage
+
+refreshToken
+     ↓
+'refresh_token'
+     ↓
+Secure Storage
+```
+
+### Kenapa `Future<void>`?
+
+Karena penyimpanan ke secure storage adalah operasi asynchronous.
+
+Makanya ada:
+
+```dart
+async
+```
+
+dan:
+
+```dart
+await
+```
+
+Artinya aplikasi **menunggu proses penyimpanan selesai** sebelum lanjut.
+
+---
+
+# 7. `readAccess()`
+
+```dart
+Future<String?> readAccess() => _storage.read(key: _accessKey);
+```
+
+Ini mengambil access token.
+
+Misalnya storage punya:
+
+```text
+access_token → abc123
+```
+
+maka:
+
+```dart
+final token = await tokenStore.readAccess();
+```
+
+hasilnya:
+
+```text
+abc123
+```
+
+Kenapa:
+
+```dart
+String?
+```
+
+bukan:
+
+```dart
+String
+```
+
+Karena token **bisa saja belum ada**.
+
+Misalnya user belum login:
+
+```text
+access_token → tidak ada
+```
+
+maka hasilnya:
+
+```text
+null
+```
+
+Jadi `String?` = **String atau null**.
+
+---
+
+# 8. `readRefresh()`
+
+```dart
+Future<String?> readRefresh() => _storage.read(key: _refreshKey);
+```
+
+Sama seperti sebelumnya, cuma mengambil:
+
+```text
+refresh_token
+```
+
+Contohnya:
+
+```dart
+final refresh = await tokenStore.readRefresh();
+```
+
+---
+
+# 9. `clear()`
+
+```dart
+Future<void> clear() => _storage.deleteAll();
+```
+
+Ini menghapus semua data yang ada di storage tersebut.
+
+Misalnya:
+
+```text
+access_token  → abc123
+refresh_token → xyz789
+```
+
+setelah:
+
+```dart
+await tokenStore.clear();
+```
+
+menjadi:
+
+```text
+kosong
+```
+
+Biasanya dipakai ketika **logout**.
+
+---
+
+# Jadi alurnya lengkap
+
+Misalnya user login:
+
+```text
+User
+ ↓
+Login
+ ↓
+Backend
+ ↓
+access token + refresh token
+ ↓
+TokenStore.save()
+ ↓
+FlutterSecureStorage
+```
+
+Ketika aplikasi perlu request API:
+
+```text
+TokenStore.readAccess()
+ ↓
+access token
+ ↓
+Dio
+ ↓
+Authorization: Bearer <token>
+ ↓
+Backend
+```
+
+Ketika logout:
+
+```text
+Logout
+ ↓
+TokenStore.clear()
+ ↓
+token hilang
+```
+
+---
+
+## Kalau dibaca sebagai bahasa manusia
+
+Kode ini:
+
+```dart
+class TokenStore {
+```
+
+**"Saya bikin tempat khusus untuk mengurus token."**
+
+```dart
+TokenStore({FlutterSecureStorage? storage})
+```
+
+**"Kalau ada storage dari luar, pakai itu."**
+
+```dart
+final FlutterSecureStorage _storage;
+```
+
+**"Ini storage yang saya pakai."**
+
+```dart
+static const _accessKey = 'access_token';
+static const _refreshKey = 'refresh_token';
+```
+
+**"Access token disimpan dengan nama `access_token`, refresh token dengan nama `refresh_token`."**
+
+```dart
+save(...)
+```
+
+**"Simpan kedua token."**
+
+```dart
+readAccess()
+```
+
+**"Ambil access token."**
+
+```dart
+readRefresh()
+```
+
+**"Ambil refresh token."**
+
+```dart
+clear()
+```
+
+**"Hapus semuanya."**
+
+Jadi **`TokenStore` bukan yang membuat token, bukan yang login ke server, dan bukan Dio**.
+
+Dia cuma **penjaga gudang token**. 🫡🔐
+
+# Asyncronous
+
+**Asynchronous / asynchronous (async)** itu gampangnya:
+
+> **program menjalankan pekerjaan yang butuh waktu tanpa harus menghentikan seluruh program sambil menunggu pekerjaan itu selesai.**
+
+Contoh paling gampang: **ambil data dari server.**
+
+Bayangkan Flutter:
+
+```text
+Flutter
+  ↓
+"Eh server, kirim data dong"
+  ↓
+⌛ menunggu server
+```
+
+Kalau semuanya synchronous dan program dipaksa menunggu:
+
+```text
+request
+  ↓
+TUNGGU SERVER  ← program stuck di sini
+  ↓
+data datang
+  ↓
+lanjut
+```
+
+Kalau asynchronous:
+
+```text
+request ───────────────→ server
+   ↓
+Flutter tetap bisa melakukan pekerjaan lain
+   ↓
+   ↓
+server selesai
+   ↓
+data dikembalikan
+```
+
+Makanya di Dart kamu sering lihat:
+
+```dart
+Future<void> save() async {
+  await _storage.write(...);
+}
+```
+
+### `async`
+
+```dart
+async
+```
+
+menandakan:
+
+> "Fungsi ini punya pekerjaan asynchronous."
+
+Biasanya fungsi seperti ini mengembalikan `Future`.
+
+---
+
+### `Future`
+
+`Future` itu bisa kamu anggap sebagai:
+
+> **“Nanti akan ada hasilnya.”**
+
+Misalnya:
+
+```dart
+Future<String> getName() async {
+  // ambil data...
+  return 'Venn';
+}
+```
+
+Saat fungsi dipanggil, hasilnya **belum tentu langsung tersedia**.
+
+Makanya:
+
+```dart
+final name = await getName();
+```
+
+### `await`
+
+`await` berarti:
+
+> **“Untuk bagian fungsi ini, tunggu hasil Future ini sebelum lanjut ke baris berikutnya.”**
+
+Contoh dari kode tokenmu:
+
+```dart
+await _storage.write(
+  key: _accessKey,
+  value: access,
+);
+```
+
+Artinya:
+
+> “Tolong simpan access token. Setelah proses penyimpanannya selesai, baru lanjut.”
+
+Lalu:
+
+```dart
+await _storage.write(
+  key: _refreshKey,
+  value: refresh,
+);
+```
+
+Jadi urutannya:
+
+```text
+simpan access token
+       ↓
+   selesai?
+       ↓
+simpan refresh token
+       ↓
+   selesai?
+       ↓
+fungsi selesai
+```
+
+### Analogi paling manusiawi 🍜
+
+Kamu pesan makanan.
+
+**Synchronous:**
+
+```text
+Pesan makanan
+↓
+berdiri di depan kasir
+↓
+MENUNGGU SAMPAI MAKANAN JADI
+↓
+baru boleh melakukan hal lain
+```
+
+**Asynchronous:**
+
+```text
+Pesan makanan
+↓
+dapat nomor pesanan
+↓
+duduk / main HP / ngoding UAS
+↓
+"Nomor 27!"
+↓
+ambil makanan
+```
+
+`Future` = **nomor pesanan, hasilnya belum tersedia sekarang.**
+`async` = **fungsi yang bisa melakukan pekerjaan semacam itu.**
+`await` = **“oke, di titik ini gue butuh hasilnya dulu.”**
+
+Jadi pas lihat:
+
+```dart
+Future<String?> readAccess() => _storage.read(key: _accessKey);
+```
+
+otakmu bisa langsung menerjemahkan:
+
+> **“Fungsi ini bakal ngasih `String`, tapi nanti, karena dia harus mengambil data dari storage.”**
+
+Itu inti asynchronous di Flutter. 😭✋

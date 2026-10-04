@@ -1,0 +1,26 @@
+name: campus_notification_app
+description: Campus Notification App (FCM + local notification + go_router + Riverpod)
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  firebase_core: ^3.6.0
+  firebase_messaging: ^15.1.3
+  flutter_local_notifications: ^18.0.1   # pin ke v18 (API initialize posisional)
+  flutter_secure_storage: ^9.2.2
+  go_router: ^14.2.7
+  flutter_riverpod: ^2.5.1
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
