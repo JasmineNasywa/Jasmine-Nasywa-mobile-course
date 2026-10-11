@@ -1,6 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/prefs.dart';
+import '../../../../core/services/prefs.dart';
 
 final prefsRepositoryProvider = Provider((ref) => PrefsRepository());
 final darkModeProvider =

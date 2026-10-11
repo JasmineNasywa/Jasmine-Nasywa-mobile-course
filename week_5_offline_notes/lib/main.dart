@@ -1,41 +1,14 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-
-import 'data/repositories/note_repository.dart';
-import 'pages/notes_page.dart';
-
-import 'pages/note_detail_page.dart';
-
-final repository = NoteRepository();
-
-final router = GoRouter(
-  routes: [
-    GoRoute(
-      path: '/',
-      builder: (context, state) {
-        return NotesPage(
-          repository: repository,
-        );
-      },
-    ),
-    GoRoute(
-      path: '/note/:id',
-      builder: (context, state) {
-        final id = int.parse(
-          state.pathParameters['id']!,
-        );
-
-        return NoteDetailPage(
-          id: id,
-          repository: repository,
-        );
-      },
-    ),
-  ],
-);
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'features/notes/presentation/pages/notes_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -43,16 +16,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Offline Notes',
+      title: 'Offline Notes & Announcement',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.blue,
-        ),
+        primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      routerConfig: router,
+      // Arahkan ke NotesPage di sini
+      home: const NotesPage(), 
     );
   }
 }

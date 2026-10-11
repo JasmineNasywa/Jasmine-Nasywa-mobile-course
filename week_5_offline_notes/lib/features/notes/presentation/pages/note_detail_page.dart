@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../data/local/note.dart';
-import '../data/repositories/note_repository.dart';
+import '../../../../data/local/note.dart';
+import '../../../../data/repositories/note_repository.dart';
 
 class NoteDetailPage extends StatefulWidget {
   const NoteDetailPage({

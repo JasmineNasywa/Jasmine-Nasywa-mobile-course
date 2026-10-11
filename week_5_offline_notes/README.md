@@ -32,23 +32,32 @@
 </table>
 
 ## Refactoring dan testing
-- UI tidak memanggil SQLite/SharedPreferences secara langsung; akses data dilakukan melalui repository.
-- Aplikasi dapat membaca dan menghapus catatan dalam mode pesawat. Fitur tambah catatan tidak dicantumkan karena belum menjadi bagian dari implementasi UI saat ini.
-- Badge dirty tersedia untuk menunjukkan status sinkronisasi catatan, tetapi pengujian perubahan badge sebelum/sesudah sync belum dilakukan.
-- Cache posts tetap dapat ditampilkan tanpa koneksi internet berdasarkan mekanisme cache-first.
-- Verifikasi kode
-PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> flutter analyze
+<table>
+  <tr>
+    <td>Sebelum Refactor</td>
+    <td><img src="screenshots/sebelumrefactor.jpeg" width="250"></td>
+  </tr>
+  <tr>
+    <td>Sesudah Refactor</td>
+    <td><img src="screenshots/setelahrefactor.jpeg" width="250"></td>
+  </tr>
+</table>
+- Layer presentation dan domain telah steril, tanpa ada dependensi ke sqflite maupun framework data/UI.
+- Interface AnnouncementRepository diletakkan di domain, implementasinya di data, serta konversi data sepenuhnya ditangani oleh AnnouncementModel.
+- Seluruh komponen UI/Widget mengakses data melalui Riverpod provider tanpa melakukan instansiasi repository secara langsung.
+- PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> flutter analyze
 Analyzing week_5_offline_notes...                                       
-No issues found! (ran in 7.3s)
+No issues found! (ran in 5.1s)
 PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> flutter test
-00:16 +2: All tests passed!  
+00:07 +2: All tests passed!                                                                                             
+PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> 
 
 ## Refleksi
-1. Daftar catatan tidak sebaiknya disimpan di SharedPreferences karena fitur tersebut ditujukan untuk data sederhana seperti preferensi atau pengaturan. Jika digunakan untuk koleksi catatan, seluruh data harus disimpan sebagai satu nilai sehingga kurang efisien dan menyulitkan proses CRUD ketika jumlah catatan bertambah.
+1. Interface ditaruh di domain agar domain tetap independen dari detail teknis (seperti database atau API) sesuai prinsip Dependency Inversion. Jika dibalik, domain akan terikat langsung ke layer data, sehingga sulit di-unit test dan kaku saat ada perubahan teknologi.
 
-2. Cache-first cukup digunakan ketika data lama masih berguna dan aplikasi perlu tetap dapat digunakan saat offline, seperti catatan. Untuk data yang harus selalu terbaru, seperti harga real-time, lebih sesuai menggunakan network-first agar aplikasi mengambil data terbaru dari server terlebih dahulu dan menggunakan cache sebagai cadangan.
+2. Use case dibutuhkan saat terdapat logika bisnis atau orkestrasi data yang kompleks. Jika hanya berupa operasi CRUD sederhana tanpa validasi khusus, memanggil repository langsung dari notifier/provider sudah cukup.
 
-3. Dirty flag dapat menjadi antrean sync sederhana dengan menandai catatan yang berubah menggunakan dirty = 1, kemudian proses sinkronisasi berjalan di background tanpa menghambat UI. Setelah berhasil disinkronkan, flag diubah menjadi 0. Tabel outbox diperlukan jika operasi sync semakin kompleks dan membutuhkan pencatatan setiap operasi, retry, atau urutan operasi.
+3. Biaya over-engineering bagi tim kecil adalah melambatnya kecepatan pengembangan akibat tingginya boilerplate dan jumlah file. Biaya ini sepadan jika aplikasi berskala besar, dikembangkan tim banyak, atau memiliki aturan bisnis yang sering berubah.
 
 4. Saya menolak penggunaan SharedPreferences sebagai penyimpanan utama catatan karena kurang sesuai untuk koleksi data dalam jumlah besar. Saya juga tidak menggunakan Drift atau Hive karena kebutuhan aplikasi saat ini masih dapat dipenuhi dengan sqflite, sedangkan penggunaan database atau framework tambahan akan menambah kompleksitas yang belum diperlukan.
 

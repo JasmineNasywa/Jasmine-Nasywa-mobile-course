@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:sqflite/sqflite.dart';
-import '../api_client.dart';
+import '../../core/api_client.dart';
 import '../models/post.dart';
 import '../local/db.dart';
 import '../local/note.dart';
