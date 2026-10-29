@@ -294,3 +294,12 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+# week_9_vibe coding
+
+## Refleksi
+- Halusinasi AI & Buktinya: AI menyarankan StateProvider lama dan akses .state langsung dari luar. Dibuktikan dengan munculnya warning invalid_use_of_protected_member saat flutter analyze.   
+- Prompt Paling Membantu: Prompt formula 5 slot dengan batas arsitektur feature-first. 
+- Yang diubah: menyesuaikan note.body agar sesuai model lokal.   
+- Refactor Utama: Memindahkan logika filter ke use case domain murni dan menggunakan NotifierProvider agar clean architecture terjaga
+- Keputusan Sulit: Menolak kode instan AI di UI dan merombaknya dengan method khusus di Notifier demi lolos zero warning flutter analyze.
