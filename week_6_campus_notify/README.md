@@ -101,6 +101,20 @@ Verifikasi: jalankan flutter analyze dan flutter test secara lokal, lalu siapkan
 Saran ditolak :
 Saran untuk menghapus route /home ditolak karena route tersebut memang disiapkan sebagai tujuan navigasi berikutnya. Walaupun belum digunakan oleh splash screen pada tahap ini, pendaftaran route diperlukan untuk pengembangan fitur selanjutnya.
 
+# week_10_ai_integration
+
+## Screenshoot
+<td><img src="screenshot/ai.jpeg" alt="Hasil implementasi integrasi ai" width="100%"></td>
+
+## Refleksi
+1. Saya mengintegrasikan AI Chat Assistant untuk membantu mahasiswa mencari informasi akademik dan memahami pengumuman kampus dengan lebih mudah.
+
+2. Saya menghindari pengiriman data sensitif seperti NIK, nomor telepon, dan alamat ke AI API serta merencanakan penyimpanan API key secara aman.
+
+3. Jika AI mengalami error, aplikasi akan menampilkan pesan kesalahan dan pengguna tetap dapat mengakses pengumuman kampus secara langsung.
+
+4. Saya belajar bahwa antarmuka chat yang sederhana, indikator loading, dan suggested prompts membuat interaksi AI di perangkat mobile lebih mudah dipahami.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.

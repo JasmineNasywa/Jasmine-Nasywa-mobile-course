@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'pages/chat_page.dart';
 import 'routes.dart'; // Import routes.dart yang baru dibuat
 
 // ==========================================
@@ -101,20 +102,25 @@ class FcmService {
 // 3. GO_ROUTER CONFIGURATION
 // ==========================================
 final router = GoRouter(
-  initialLocation: AppRoutes.home,
-  redirect: (context, state) {
-    final loggedIn = false; 
-    final goingLogin = state.matchedLocation == AppRoutes.login;
-    if (!loggedIn && !goingLogin) return AppRoutes.login;
-    if (loggedIn && goingLogin) return AppRoutes.home;
-    return null;
-  },
+  initialLocation: AppRoutes.login,
   routes: [
-    GoRoute(path: AppRoutes.login, builder: (_, __) => const LoginPage()),
-    GoRoute(path: AppRoutes.home, builder: (_, __) => const HomePage()),
+    GoRoute(
+      path: AppRoutes.login,
+      builder: (_, __) => const LoginPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.home,
+      builder: (_, __) => const HomePage(),
+    ),
     GoRoute(
       path: AppRoutes.pengumuman,
-      builder: (_, s) => AnnouncementPage(id: s.pathParameters['id'] ?? ''),
+      builder: (_, s) => AnnouncementPage(
+        id: s.pathParameters['id'] ?? '',
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.chat,
+      builder: (_, __) => const ChatPage(),
     ),
   ],
 );
@@ -174,14 +180,78 @@ class _MyAppState extends State<MyApp> {
 // ==========================================
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
+
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Halaman Login')));
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            context.go(AppRoutes.home);
+          },
+          child: const Text('Masuk ke Campus Notify'),
+        ),
+      ),
+    );
+  }
 }
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
   @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Halaman Home')));
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Campus Notify'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.school_rounded,
+                size: 64,
+                color: Color(0xFF315CDB),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Selamat Datang!',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Campus Notify siap membantu aktivitas kampusmu.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 28),
+
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    context.push(AppRoutes.chat);
+                  },
+                  icon: const Icon(Icons.smart_toy_rounded),
+                  label: const Text('Chat dengan AI'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF315CDB),
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class AnnouncementPage extends StatelessWidget {
