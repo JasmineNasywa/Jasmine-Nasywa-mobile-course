@@ -115,6 +115,58 @@ Saran untuk menghapus route /home ditolak karena route tersebut memang disiapkan
 
 4. Saya belajar bahwa antarmuka chat yang sederhana, indikator loading, dan suggested prompts membuat interaksi AI di perangkat mobile lebih mudah dipahami.
 
+
+# week_11_optimisasi_performa
+
+1. UI Jank
+Ada beberapa frame dengan UI frame time melewati batas 16,67 ms.
+
+2. Raster Jank
+Ada beberapa frame dengan Raster frame time yang tinggi.
+
+3. Layout membutuhkan waktu cukup lama
+Pada Frame 49, DevTools secara eksplisit menunjukkan Layout sebagai fase UI terlama.
+
+Berdasarkan hasil profiling, ditemukan indikasi UI jank, Raster jank, dan waktu proses layout yang relatif tinggi pada beberapa frame. Masalah tersebut perlu dianalisis lebih lanjut untuk mengetahui penyebab utamanya. Perbaikan belum dapat ditentukan secara langsung karena belum dinilai cukup berdampak bagi pengguna. Tidak semua indikasi jank harus langsung diperbaiki, terutama apabila hanya terjadi sesaat dan tidak memengaruhi pengalaman penggunaan aplikasi secara signifikan.
+
+Berdasarkan pengujian, lonjakan frame time dan jank lebih banyak ditemukan ketika aplikasi pertama kali dibuka. Pada navigasi berikutnya, performa cenderung lebih stabil dan perpindahan halaman berlangsung lebih lancar.
+
+Hal ini mengindikasikan kemungkinan adanya overhead pada proses inisialisasi awal aplikasi, seperti pemuatan data, inisialisasi widget, atau persiapan resource. Oleh karena itu, optimasi belum menjadi prioritas sebelum penyebab lonjakan tersebut dapat dipastikan.
+
+Perbaikan sebaiknya difokuskan pada proses startup apabila pengujian lebih lanjut menunjukkan bahwa keterlambatan tersebut berdampak pada pengalaman pengguna.
+
+## screenshoot
+
+<td><img src="screenshot/optimisasi1.jpeg" alt="Rebuild masih ringan belum perlu optimisasi, bar merah hanya terjadi ketika masuk dalam aplikasi saja" width="100%"></td>
+
+## refleksi
+
+1. Optimasi mana yang memberikan dampak terbesar dan mengapa?
+
+Pada praktikum ini, belum dilakukan perubahan atau optimasi kode karena hasil profiling belum menunjukkan bukti yang cukup kuat mengenai adanya masalah excessive widget rebuild. Beberapa widget memang mengalami rebuild, tetapi frekuensinya masih relatif rendah dalam skenario pengujian Hal ini menunjukkan bahwa optimasi perlu dilakukan berdasarkan hasil pengukuran dan identifikasi masalah, bukan sekadar mengubah kode agar terlihat lebih optimal.
+
+2. Bagaimana Anda memverifikasi bahwa optimasi benar-benar bekerja (bukan placebo)?
+
+Verifikasi dilakukan dengan membandingkan hasil profiling sebelum dan sesudah optimasi menggunakan Flutter DevTools dalam Profile Mode.
+
+Beberapa metrik yang dapat dibandingkan meliputi:
+- Frame time pada UI Thread dan Raster Thread.
+- Jumlah frame yang mengalami jank.
+- Rata-rata FPS.
+- Penggunaan memori.
+- Frekuensi request API.
+
+Optimasi dapat dianggap berhasil apabila terdapat perbaikan yang terukur pada metrik terkait tanpa menimbulkan masalah baru.
+
+3. Trade-off apa yang Anda hadapi (misalnya kompleksitas kode vs performa)?
+
+Trade-off yang perlu dipertimbangkan adalah kompleksitas kode dan kemudahan pemeliharaan aplikasi. Optimasi seperti penggunaan caching, pemisahan state, dan perubahan struktur widget dapat meningkatkan performa, tetapi juga berpotensi menambah kompleksitas implementasi.
+
+4. Kapan sebaiknya optimasi premature dihindari?
+
+Premature optimization sebaiknya dihindari ketika belum terdapat bukti bahwa suatu bagian aplikasi menjadi bottleneck performa.
+
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
