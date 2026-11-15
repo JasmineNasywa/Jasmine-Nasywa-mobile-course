@@ -1,11 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sqflite/sqflite.dart'; 
-import 'package:path/path.dart';
+
 import '../../data/repositories/note_repository_impl.dart';
 import '../../domain/repositories/note_repository.dart';
 import '../../domain/usecases/get_notes.dart';
 import '../../domain/entities/note.dart';
 import '../../domain/usecases/search_notes.dart';
+import '../../domain/usecases/create_note.dart';
+import '/../../data/local/db.dart' as local_db;
 
 // 1. UseCase Provider
 final searchNotesUseCaseProvider = Provider((ref) => SearchNotes());
@@ -20,6 +21,10 @@ class SearchQueryNotifier extends Notifier<String> {
   }
 }
 
+final createNoteProvider = Provider<CreateNote>((ref) {
+  return CreateNote(ref.watch(noteRepositoryProvider));
+});
+
 final searchQueryProvider = NotifierProvider<SearchQueryNotifier, String>(() {
   return SearchQueryNotifier();
 });
@@ -31,29 +36,31 @@ final filteredNotesProvider = Provider.family<List<Note>, List<Note>>((ref, allN
   return searchUseCase.execute(allNotes, query);
 });
 
-Future<Database> openNotesDb() async {
-  final dbPath = await getDatabasesPath();
-  final path = join(dbPath, 'notes.db');
 
-  return await openDatabase(
-    path,
-    version: 1,
-    onCreate: (db, version) async {
-      await db.execute('''
-        CREATE TABLE notes (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          title TEXT NOT NULL,
-          body TEXT,
-          updated_at TEXT NOT NULL,
-          dirty INTEGER NOT NULL
-        )
-      ''');
-    },
-  );
-}
+
+// Future<Database> openNotesDb() async {
+//   final dbPath = await getDatabasesPath();
+//   final path = join(dbPath, 'notes.db');
+
+//   // return await openDatabase(
+//   //   path,
+//   //   version: 1,
+//   //   onCreate: (db, version) async {
+//   //     await db.execute('''
+//   //       CREATE TABLE notes (
+//   //         id INTEGER PRIMARY KEY AUTOINCREMENT,
+//   //         title TEXT NOT NULL,
+//   //         body TEXT,
+//   //         updated_at TEXT NOT NULL,
+//   //         dirty INTEGER NOT NULL
+//   //       )
+//   //     ''');
+//   //   },
+//   // );
+// }
 
 final noteRepositoryProvider = Provider<NoteRepository>((ref) {
-  return NoteRepositoryImpl(openNotesDb); 
+  return NoteRepositoryImpl(local_db.openNotesDb);
 });
 
 final getNotesProvider = Provider<GetNotes>((ref) {
