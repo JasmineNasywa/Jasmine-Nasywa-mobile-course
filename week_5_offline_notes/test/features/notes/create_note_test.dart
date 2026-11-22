@@ -1,4 +1,3 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:week_5_offline_notes/features/notes/domain/usecases/create_note.dart';
 import 'package:week_5_offline_notes/core/failures.dart';
@@ -17,10 +16,7 @@ void main() {
 
     group('when input is valid', () {
       test('should create a note successfully', () async {
-        final result = await createNote(
-          title: 'Test Note',
-          body: 'Test Body',
-        );
+        final result = await createNote(title: 'Test Note', body: 'Test Body');
 
         expect(result.failure, isNull);
         expect(result.note, isNotNull);
@@ -32,9 +28,7 @@ void main() {
 
     group('when body is empty', () {
       test('should create note with empty body', () async {
-        final result = await createNote(
-          title: 'Empty Body',
-        );
+        final result = await createNote(title: 'Empty Body');
 
         expect(result.failure, isNull);
         expect(result.note!.body, '');
@@ -44,14 +38,11 @@ void main() {
     group('when repository fails', () {
       test('should return repository failure', () async {
         final failure = LocalFailure('Database error');
-        final failingRepository =
-            FakeNoteRepositoryFailure(failure);
+        final failingRepository = FakeNoteRepositoryFailure(failure);
 
         final useCase = CreateNote(failingRepository);
 
-        final result = await useCase(
-          title: 'Failed Note',
-        );
+        final result = await useCase(title: 'Failed Note');
 
         expect(result.note, isNull);
         expect(result.failure, same(failure));

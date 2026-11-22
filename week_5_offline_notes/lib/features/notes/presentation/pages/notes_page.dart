@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -15,20 +14,15 @@ class NotesPage extends ConsumerWidget {
     final state = ref.watch(notesProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notes'),
-      ),
+      appBar: AppBar(title: const Text('Notes')),
       body: state.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => ErrorView(
           message: '$e',
           onRetry: () => ref.invalidate(notesProvider),
         ),
         data: (notes) {
-          final filteredNotes =
-              ref.watch(filteredNotesProvider(notes));
+          final filteredNotes = ref.watch(filteredNotesProvider(notes));
 
           return Column(
             children: [
@@ -36,9 +30,7 @@ class NotesPage extends ConsumerWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   onChanged: (value) {
-                    ref
-                        .read(searchQueryProvider.notifier)
-                        .setQuery(value);
+                    ref.read(searchQueryProvider.notifier).setQuery(value);
                   },
                   decoration: InputDecoration(
                     hintText: 'Cari judul notes...',
@@ -52,9 +44,7 @@ class NotesPage extends ConsumerWidget {
 
               Expanded(
                 child: filteredNotes.isEmpty
-                    ? const Center(
-                        child: Text('Catatan tidak ditemukan'),
-                      )
+                    ? const Center(child: Text('Catatan tidak ditemukan'))
                     : ListView.builder(
                         itemCount: filteredNotes.length,
                         itemBuilder: (context, index) {
@@ -76,9 +66,7 @@ class NotesPage extends ConsumerWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (_) => const AddNotePage(),
-            ),
+            MaterialPageRoute(builder: (_) => const AddNotePage()),
           );
         },
       ),

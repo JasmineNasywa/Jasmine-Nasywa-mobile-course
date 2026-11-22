@@ -30,13 +30,14 @@ final searchQueryProvider = NotifierProvider<SearchQueryNotifier, String>(() {
 });
 
 // 3. Filtered Notes Provider
-final filteredNotesProvider = Provider.family<List<Note>, List<Note>>((ref, allNotes) {
+final filteredNotesProvider = Provider.family<List<Note>, List<Note>>((
+  ref,
+  allNotes,
+) {
   final query = ref.watch(searchQueryProvider);
   final searchUseCase = ref.watch(searchNotesUseCaseProvider);
   return searchUseCase.execute(allNotes, query);
 });
-
-
 
 // Future<Database> openNotesDb() async {
 //   final dbPath = await getDatabasesPath();

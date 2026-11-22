@@ -1,4 +1,3 @@
-
 import 'package:week_5_offline_notes/features/notes/domain/entities/note.dart';
 import 'package:week_5_offline_notes/features/notes/domain/repositories/note_repository.dart';
 import 'package:week_5_offline_notes/core/failures.dart';
@@ -10,11 +9,8 @@ class FakeNoteRepositorySuccess implements NoteRepository {
 
   @override
   Future<({List<Note> notes, Failure? failure})> fetchNotes() async {
-  return (
-    notes: List<Note>.unmodifiable(notes),
-    failure: null,
-  );
-}
+    return (notes: List<Note>.unmodifiable(notes), failure: null);
+  }
 
   @override
   Future<({Note? note, Failure? failure})> addNote({

@@ -3,7 +3,8 @@ import '../entities/announcement.dart';
 
 abstract class AnnouncementRepository {
   // Pakai 'announcements' (pakai s)
-  Future<({List<Announcement> announcements, Failure? failure})> fetchAnnouncements();
+  Future<({List<Announcement> announcements, Failure? failure})>
+  fetchAnnouncements();
 
   Future<({Announcement? announcement, Failure? failure})> addAnnouncement({
     required String title,

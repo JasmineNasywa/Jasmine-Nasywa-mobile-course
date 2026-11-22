@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../providers/announcement_providers.dart';
 
 class AnnouncementPage extends ConsumerWidget {
@@ -10,13 +11,14 @@ class AnnouncementPage extends ConsumerWidget {
     final announcementsState = ref.watch(announcementsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daftar Pengumuman'),
-      ),
+      appBar: AppBar(title: const Text('Daftar Pengumuman')),
       body: announcementsState.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
-          child: Text('Gagal memuat pengumuman: $e', style: const TextStyle(color: Colors.red)),
+          child: Text(
+            'Gagal memuat pengumuman: $e',
+            style: const TextStyle(color: Colors.red),
+          ),
         ),
         data: (announcements) => announcements.isEmpty
             ? const Center(child: Text('Belum ada pengumuman.'))
@@ -27,7 +29,9 @@ class AnnouncementPage extends ConsumerWidget {
                   return ListTile(
                     title: Text(announcement.title),
                     subtitle: Text(announcement.content),
-                    trailing: Text(announcement.date.toLocal().toString().split(' ')[0]),
+                    trailing: Text(
+                      announcement.date.toLocal().toString().split(' ')[0],
+                    ),
                   );
                 },
               ),

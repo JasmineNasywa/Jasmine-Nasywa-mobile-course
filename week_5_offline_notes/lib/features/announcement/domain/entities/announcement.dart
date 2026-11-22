@@ -2,14 +2,12 @@ class Announcement {
   const Announcement({
     this.id,
     required this.title,
-    this.content= '',
+    this.content = '',
     required this.date,
-    
   });
 
   final int? id;
   final String title;
   final String content;
   final DateTime date;
-
 }

@@ -3,9 +3,7 @@ import 'package:week_5_offline_notes/data/local/note.dart';
 
 void main() {
   test('fromMap aman terhadap field yang hilang', () {
-    final note = Note.fromMap({
-      'title': 'Belanja',
-    });
+    final note = Note.fromMap({'title': 'Belanja'});
 
     expect(note.title, 'Belanja');
     expect(note.body, '');

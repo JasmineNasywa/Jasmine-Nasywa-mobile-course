@@ -82,9 +82,7 @@ void main() {
     });
 
     test('should save note with empty body', () async {
-      final result = await repository.addNote(
-        title: 'Empty Body',
-      );
+      final result = await repository.addNote(title: 'Empty Body');
 
       expect(result.failure, isNull);
       expect(result.note!.body, '');
@@ -95,9 +93,7 @@ void main() {
         throw Exception('Database error');
       });
 
-      final result = await failingRepository.addNote(
-        title: 'Failed Note',
-      );
+      final result = await failingRepository.addNote(title: 'Failed Note');
 
       expect(result.note, isNull);
       expect(result.failure, isNotNull);

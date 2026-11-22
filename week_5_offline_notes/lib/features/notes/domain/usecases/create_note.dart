@@ -1,4 +1,3 @@
-
 import '../entities/note.dart';
 import '../repositories/note_repository.dart';
 import '/../../../core/failures.dart';
@@ -12,9 +11,6 @@ class CreateNote {
     required String title,
     String body = '',
   }) {
-    return repository.addNote(
-      title: title,
-      body: body,
-    );
+    return repository.addNote(title: title, body: body);
   }
 }

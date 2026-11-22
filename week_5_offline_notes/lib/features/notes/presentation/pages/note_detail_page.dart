@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../../../../data/local/note.dart';
 import '../../../../data/repositories/note_repository.dart';
 
 class NoteDetailPage extends StatefulWidget {
-  const NoteDetailPage({
-    super.key,
-    required this.id,
-    required this.repository,
-  });
+  const NoteDetailPage({super.key, required this.id, required this.repository});
 
   final int id;
   final NoteRepository repository;
@@ -40,46 +37,30 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_note == null) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('Catatan'),
-        ),
-        body: const Center(
-          child: Text('Catatan tidak ditemukan.'),
-        ),
+        appBar: AppBar(title: const Text('Catatan')),
+        body: const Center(child: Text('Catatan tidak ditemukan.')),
       );
     }
 
     final note = _note!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Detail Catatan'),
-      ),
+      appBar: AppBar(title: const Text('Detail Catatan')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              note.title,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
+            Text(note.title, style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 12),
             Text(note.body),
             const SizedBox(height: 16),
-            if (note.dirty)
-              const Chip(
-                label: Text('Belum tersinkron'),
-              ),
+            if (note.dirty) const Chip(label: Text('Belum tersinkron')),
           ],
         ),
       ),

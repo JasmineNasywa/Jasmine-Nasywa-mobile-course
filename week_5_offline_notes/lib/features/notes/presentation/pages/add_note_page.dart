@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,9 +29,7 @@ class _AddNotePageState extends ConsumerState<AddNotePage> {
 
     if (title.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Judul catatan tidak boleh kosong'),
-        ),
+        const SnackBar(content: Text('Judul catatan tidak boleh kosong')),
       );
       return;
     }
@@ -40,37 +37,30 @@ class _AddNotePageState extends ConsumerState<AddNotePage> {
     setState(() => _isSaving = true);
 
     try {
-      final result = await ref.read(createNoteProvider).call(
-        title: title,
-        body: body,
-      );
+      final result = await ref
+          .read(createNoteProvider)
+          .call(title: title, body: body);
 
       if (!mounted) return;
 
       if (result.failure != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(result.failure!.message),
-          ),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(result.failure!.message)));
         return;
       }
 
       ref.invalidate(notesProvider);
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Catatan berhasil disimpan'),
-        ),
+        const SnackBar(content: Text('Catatan berhasil disimpan')),
       );
 
       Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Terjadi kesalahan: $e')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Terjadi kesalahan: $e')));
     } finally {
       if (mounted) {
         setState(() => _isSaving = false);

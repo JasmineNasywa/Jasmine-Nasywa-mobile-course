@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/note.dart'; 
+
+import '../../domain/entities/note.dart';
 
 class NoteTile extends StatelessWidget {
   const NoteTile({
@@ -17,11 +18,7 @@ class NoteTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(note.title),
-      subtitle: Text(
-        note.body,
-        maxLines: 2,
-        overflow: TextOverflow.ellipsis,
-      ),
+      subtitle: Text(note.body, maxLines: 2, overflow: TextOverflow.ellipsis),
       onTap: onTap,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
@@ -29,14 +26,9 @@ class NoteTile extends StatelessWidget {
           if (note.dirty)
             const Padding(
               padding: EdgeInsets.only(right: 8),
-              child: Chip(
-                label: Text('Belum tersinkron'),
-              ),
+              child: Chip(label: Text('Belum tersinkron')),
             ),
-          IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: onDelete,
-          ),
+          IconButton(icon: const Icon(Icons.delete), onPressed: onDelete),
         ],
       ),
     );

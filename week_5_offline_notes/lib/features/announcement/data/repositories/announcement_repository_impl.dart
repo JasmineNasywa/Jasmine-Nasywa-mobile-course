@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+
 import '../../../../core/failures.dart';
 import '../../domain/entities/announcement.dart';
 import '../../domain/repositories/announcement_repository.dart';
@@ -10,7 +11,8 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
   final Future<Database> Function() _openDb;
 
   @override
-  Future<({List<Announcement> announcements, Failure? failure})> fetchAnnouncements() async {
+  Future<({List<Announcement> announcements, Failure? failure})>
+  fetchAnnouncements() async {
     try {
       final db = await _openDb();
       final result = await db.query('announcements');
@@ -20,7 +22,10 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
       return (announcements: announcements, failure: null);
     } catch (e) {
       // Perhatikan <Announcement>[] biar gak kebaca List<dynamic>!
-      return (announcements: <Announcement>[], failure: LocalFailure(e.toString()));
+      return (
+        announcements: <Announcement>[],
+        failure: LocalFailure(e.toString()),
+      );
     }
   }
 
@@ -37,7 +42,7 @@ class AnnouncementRepositoryImpl implements AnnouncementRepository {
         content: content,
         date: date,
       );
-      
+
       final id = await db.insert('announcements', model.toMap());
       final createdAnnouncement = Announcement(
         id: id,

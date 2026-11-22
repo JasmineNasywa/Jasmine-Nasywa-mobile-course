@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../providers/notes_providers.dart';
 
 class NoteSearchBar extends ConsumerWidget {
@@ -17,9 +18,7 @@ class NoteSearchBar extends ConsumerWidget {
         decoration: InputDecoration(
           hintText: 'Cari judul notes...',
           prefixIcon: const Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-          ),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8.0)),
         ),
       ),
     );
@@ -41,8 +40,8 @@ class NoteEmptyView extends ConsumerWidget {
           const Icon(Icons.search_off, size: 64, color: Colors.grey),
           const SizedBox(height: 16),
           Text(
-            query.isEmpty 
-                ? 'Belum ada catatan' 
+            query.isEmpty
+                ? 'Belum ada catatan'
                 : 'Catatan dengan kata "$query" tidak ditemukan',
             style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),

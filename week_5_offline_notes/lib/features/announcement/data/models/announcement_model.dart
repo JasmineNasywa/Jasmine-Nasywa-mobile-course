@@ -32,11 +32,6 @@ class AnnouncementModel extends Announcement {
 
   // Ubah Model ini kembali ke bentuk Entity murni (sesuai aturan Clean Architecture)
   Announcement toEntity() {
-    return Announcement(
-      id: id,
-      title: title,
-      content: content,
-      date: date,
-    );
+    return Announcement(id: id, title: title, content: content, date: date);
   }
 }

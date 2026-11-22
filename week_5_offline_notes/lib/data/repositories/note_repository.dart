@@ -1,5 +1,7 @@
 import 'dart:convert';
+
 import 'package:sqflite/sqflite.dart';
+
 import '../../core/api_client.dart';
 import '../models/post.dart';
 import '../local/db.dart';
@@ -10,13 +12,11 @@ class NoteRepository {
   NoteRepository({
     Future<Database> Function()? openDb,
     PostRepository? postRepository,
-  })  : _openDb = openDb ?? openNotesDb,
-        _postRepository =
-            postRepository ?? PostRepository(createDio());
+  }) : _openDb = openDb ?? openNotesDb,
+       _postRepository = postRepository ?? PostRepository(createDio());
 
   final Future<Database> Function() _openDb;
   final PostRepository _postRepository;
-
 
   Future<List<Note>> fetchNotes() async {
     final db = await _openDb();
@@ -50,7 +50,8 @@ class NoteRepository {
   Future<int> countDirty() async {
     final db = await _openDb();
     final rows = await db.rawQuery(
-        'SELECT COUNT(*) AS c FROM notes WHERE dirty = 1');
+      'SELECT COUNT(*) AS c FROM notes WHERE dirty = 1',
+    );
     return ((rows.first['c'] as num?)?.toInt() ?? 0);
   }
 
@@ -60,77 +61,70 @@ class NoteRepository {
   }
 
   Future<void> refreshPostsInBackground() async {
-  try {
-    final posts = await _postRepository.fetchPosts();
+    try {
+      final posts = await _postRepository.fetchPosts();
 
-    final db = await _openDb();
+      final db = await _openDb();
 
-    final payload = jsonEncode(
-      posts.map((post) => post.toJson()).toList(),
-    );
+      final payload = jsonEncode(posts.map((post) => post.toJson()).toList());
 
-    await db.insert(
-      'cached_posts',
-      {
+      await db.insert('cached_posts', {
         'id': 1,
         'payload': payload,
         'cached_at': DateTime.now().toIso8601String(),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  } catch (_) {
-    // Kalau internet/API gagal, cache lama tetap bisa dipakai.
-  }
-}
-
-Future<Note?> getNote(int id) async {
-  final db = await _openDb();
-
-  final rows = await db.query(
-    'notes',
-    where: 'id = ?',
-    whereArgs: [id],
-    limit: 1,
-  );
-
-  if (rows.isEmpty) {
-    return null;
-  }
-
-  return Note.fromMap(rows.first);
-}
-
-Future<List<Post>> loadPostsCacheFirst() async {
-  final db = await _openDb();
-
-  final rows = await db.query(
-    'cached_posts',
-    orderBy: 'cached_at DESC',
-    limit: 1,
-  );
-
-  List<Post> cached = [];
-
-  if (rows.isNotEmpty) {
-    final payload = rows.first['payload'] as String;
-
-    final decoded = jsonDecode(payload);
-
-    if (decoded is List) {
-      cached = decoded
-          .whereType<Map<String, dynamic>>()
-          .map(Post.fromJson)
-          .toList();
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
+    } catch (_) {
+      // Kalau internet/API gagal, cache lama tetap bisa dipakai.
     }
   }
 
-  refreshPostsInBackground();
+  Future<Note?> getNote(int id) async {
+    final db = await _openDb();
 
-  return cached;
-}
-Future<void> syncNotes() async {
+    final rows = await db.query(
+      'notes',
+      where: 'id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
 
-  await markAllSynced();
-}
+    if (rows.isEmpty) {
+      return null;
+    }
 
+    return Note.fromMap(rows.first);
+  }
+
+  Future<List<Post>> loadPostsCacheFirst() async {
+    final db = await _openDb();
+
+    final rows = await db.query(
+      'cached_posts',
+      orderBy: 'cached_at DESC',
+      limit: 1,
+    );
+
+    List<Post> cached = [];
+
+    if (rows.isNotEmpty) {
+      final payload = rows.first['payload'] as String;
+
+      final decoded = jsonDecode(payload);
+
+      if (decoded is List) {
+        cached = decoded
+            .whereType<Map<String, dynamic>>()
+            .map(Post.fromJson)
+            .toList();
+      }
+    }
+
+    refreshPostsInBackground();
+
+    return cached;
+  }
+
+  Future<void> syncNotes() async {
+    await markAllSynced();
+  }
 }

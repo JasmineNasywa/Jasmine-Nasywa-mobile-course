@@ -365,6 +365,16 @@ Analyzing week_5_offline_notes...
 No issues found! (ran in 5.3s)
 
 
+# week_13_ci/cd
+
+## documentatiom
+
+- dart format
+dart format --output=none --set-exit-if-changed lib test
+PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> dart format --output=none --set-exit-if-changed lib test
+Formatted 40 files (0 changed) in 0.20 seconds.
+
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
