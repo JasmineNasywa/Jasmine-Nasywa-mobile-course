@@ -1,3 +1,4 @@
+
 name: Flutter CI
 
 on:
@@ -17,6 +18,11 @@ concurrency:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: week_5_offline_notes
+
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -24,8 +30,8 @@ jobs:
           flutter-version: '3.47.8'
           channel: stable
       - run: flutter pub get
-      - run: dart format --output=none --set-exit-if-changed .
-      - run: flutter analyze 
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
       - run: flutter test --coverage
       - run: flutter build apk --release
       - run: flutter build appbundle --release
@@ -33,7 +39,7 @@ jobs:
         with:
           name: android-builds
           path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+            week_5_offline_notes/build/app/outputs/flutter-apk/app-release.apk
+            week_5_offline_notes/build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 7
