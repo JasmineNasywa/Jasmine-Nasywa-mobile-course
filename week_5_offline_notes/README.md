@@ -281,6 +281,90 @@ Try correcting the name to the name of an existing getter, or defining a getter 
 To run this test again: D:\FlutterSDK\flutter\bin\cache\dart-sdk\bin\dart.exe test E:/College/Code File/Jasmine-Nasywa-mobile-course/aichallenge/week_5/test/widget_test.dart -p vm --plain-name "loading E:/College/Code File/Jasmine-Nasywa-mobile-course/aichallenge/week_5/test/widget_test.dart"
 00:10 +0 -1: Some tests failed.
 
+
+
+# week_9_vibe coding
+
+## Refleksi
+- Halusinasi AI & Buktinya: AI menyarankan StateProvider lama dan akses .state langsung dari luar. Dibuktikan dengan munculnya warning invalid_use_of_protected_member saat flutter analyze.   
+- Prompt Paling Membantu: Prompt formula 5 slot dengan batas arsitektur feature-first. 
+- Yang diubah: menyesuaikan note.body agar sesuai model lokal.   
+- Refactor Utama: Memindahkan logika filter ke use case domain murni dan menggunakan NotifierProvider agar clean architecture terjaga
+- Keputusan Sulit: Menolak kode instan AI di UI dan merombaknya dengan method khusus di Notifier demi lolos zero warning flutter analyze.
+
+# week_12_testing
+
+## Testing
+
+Pengujian dilakukan untuk memastikan fitur Offline Notes berjalan sesuai kebutuhan, mulai dari proses pengambilan data, penyimpanan catatan, validasi input, hingga interaksi pengguna.
+
+### 1. Catat Perilaku (Test Scenarios)
+
+Beberapa skenario pengujian yang digunakan:
+
+| ID | Skenario | Input / Kondisi | Hasil yang Diharapkan |
+|---|---|---|---|
+| SC01 | Menambahkan catatan | Judul dan body valid | Catatan berhasil disimpan |
+| SC02 | Judul kosong | Judul tidak diisi | Sistem menampilkan pesan validasi |
+| SC03 | Body kosong | Judul valid, body kosong | Catatan tetap berhasil disimpan |
+| SC04 | Database gagal diakses | Terjadi database error | Sistem mengembalikan Failure |
+| SC05 | Mengambil catatan | Database kosong | Sistem mengembalikan daftar kosong |
+| SC06 | Menyimpan catatan | Proses insert gagal | Sistem menampilkan pesan kegagalan |
+
+### 2. Unit Testing
+
+Unit testing digunakan untuk menguji business logic pada Use Case, seperti CreateNote.
+
+Pengujian dikelompokkan menggunakan group() berdasarkan fungsi yang diuji.
+
+Contoh kasus:
+- Membuat catatan dengan input valid.
+- Membuat catatan dengan body kosong.
+- Menangani kegagalan dari repository.
+
+### 3. Dependency Testing
+
+Pengujian dependency dilakukan dengan memisahkan akses database melalui NoteRepository.
+
+Fake repository digunakan untuk menyimulasikan dua kondisi:
+
+- **Success:** Repository berhasil mengambil dan menyimpan catatan.
+- **Failure:** Repository mengembalikan kegagalan ketika operasi database dilakukan.
+
+Pengujian NoteRepositoryImpl menggunakan SQLite in-memory untuk menghindari perubahan pada database aplikasi sebenarnya.
+
+### 4. UI Testing
+
+Widget testing dilakukan pada AddNotePage untuk memastikan tampilan dan interaksi pengguna berjalan sesuai harapan.
+
+Skenario pengujian:
+- Memastikan form Add Note ditampilkan dengan benar.
+- Memastikan judul kosong ditolak melalui validasi.
+- Memastikan catatan berhasil disimpan dan navigasi kembali berjalan.
+- Memastikan pesan error ditampilkan ketika repository gagal menyimpan catatan.
+
+Hasil: All tests passed.
+
+### 5. Integration Testing
+
+Integration testing digunakan untuk menguji alur utama aplikasi yang melibatkan beberapa bagian, mulai dari interaksi UI, pemanggilan Use Case, repository, hingga penyimpanan data.
+
+PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> flutter test integration_test/app_test.dart -d RMX3941    
+00:00 +0: loading E:/College/Code File/Jasmine-Nasywa-mobile-course/week_5_offline_notes/integration_test/app_test.dart                       R01:48 +0: loading E:/College/Code File/Jasmine-Nasywa-mobile-course/week_5_offline_notes/integration_test/app_test.dart                 108.4s
+√ Built build\app\outputs\flutter-apk\app-debug.apk
+01:50 +0: loading E:/College/Code File/Jasmine-Nasywa-mobile-course/week_5_offline_notes/integration_test/app_test.dart                       I02:04 +0: loading E:/College/Code File/Jasmine-Nasywa-mobile-course/week_5_offline_notes/integration_test/app_test.dart                  14.3s
+02:24 +1: All tests passed!                  
+
+### 6. Menjalankan Pemeriksaan
+
+PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> flutter test --coverage
+00:07 +15: All tests passed!
+
+PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> flutter analyze
+Analyzing week_5_offline_notes...                                       
+No issues found! (ran in 5.3s)
+
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
