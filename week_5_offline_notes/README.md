@@ -374,6 +374,35 @@ dart format --output=none --set-exit-if-changed lib test
 PS E:\College\Code File\Jasmine-Nasywa-mobile-course\week_5_offline_notes> dart format --output=none --set-exit-if-changed lib test
 Formatted 40 files (0 changed) in 0.20 seconds.
 
+<table>
+  <tr>
+    <th>Screenshot</th>
+  </tr>
+  <tr>
+    <td><img src="screenshot/ci1.jpeg" width="250"></td>
+  </tr>
+  <tr>
+    <td><img src="screenshot/ci2.jpeg" width="250"></td>
+  </tr>
+</table>
+
+## Build Artifacts
+
+- [Download Android Builds (APK & AAB)](android-builds.zip)
+
+## Refleksi
+
+1. Masalah apa yang ditemukan otomatis sebelum perubahan di-merge?
+
+CI mendeteksi format kode Dart yang belum konsisten, penggunaan API deprecated, serta kesalahan konfigurasi working directory yang menyebabkan proses pengambilan dependency gagal.
+
+2. Informasi apa yang dibutuhkan untuk menyelidiki build yang gagal?
+
+Diperlukan log GitHub Actions, pesan error, commit hash, versi Flutter dan Dart, serta konfigurasi workflow untuk mengetahui penyebab kegagalan.
+
+3. Bagian mana yang masih perlu persetujuan atau pemeriksaan manual sebelum rilis?
+
+Pengujian aplikasi langsung pada perangkat Android, pemeriksaan fungsi dan tampilan, keamanan dependency, konfigurasi signing key, serta persetujuan akhir sebelum aplikasi didistribusikan.
 
 ## Getting Started
 
